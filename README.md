@@ -7,11 +7,11 @@ This program is a continually updating leaderboard for sports leagues. All the u
 Let's create a leaderboard for the NFL. We'll start by adding matches. 
 ![](images/demo_1.png)
 ![](images/demo_2.png)
+Once we've added some matches we can check whether our data is correct by printing a console output.
 ![](images/demo_3.png)
 ![](images/demo_4.png)
+If we're satisfied then we can export it to a file. 
 ![](images/demo_5.png)
 ![](images/demo_6.png)
-![](images/demo_7.png)
-Once we've added some matches we can check whether our data is correct by printing a console output.
-If we're satisfied then we can export it to a file. 
 Now, the next time we start the program we can load in the old database. 
+![](images/demo_7.png)
