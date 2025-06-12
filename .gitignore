@@ -1,0 +1,8 @@
+__pycache__/
+**/__pycache__/
+Obselete/
+.vscode/
+*.txt
+*.json
+*.csv
+*.docx

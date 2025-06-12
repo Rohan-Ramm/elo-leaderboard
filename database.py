@@ -35,6 +35,7 @@ class Database():
         self.export_strategy = JsonExport()
         self.caretaker = Caretaker() 
         self.matches = Match_List()
+        self.mass_entry = False
     
     
     def start(self):
@@ -76,9 +77,10 @@ class Database():
         print("Roll back to last year (4)")
         print("Print leaderboard (5)")
         print("Print All Data (6)")
-        print("Exit (7)")
+        print("Change Settings (7)")
+        print("Exit (8)")
         choice = int(input("What do you choose? \n"))
-        while choice < 1 or choice > 7:
+        while choice < 1 or choice > 8:
             print("Invalid Input")
             choice = int(input("Enter a valid input \n"))
         if choice == 1:
@@ -143,6 +145,8 @@ class Database():
         elif choice == 6:
             self.console_output()
         elif choice == 7:
+            self.settings_menu()
+        elif choice == 8:
             result = False
         return result
     def get_data(self):
@@ -205,26 +209,22 @@ class Database():
             print(f"During {match["Year"]} {match["Winner"]} defeated {match["Loser"]} for game {match["Match Number"]} of {match["Tour"]}.")
         print()
         
+    def settings_menu(self):
+        print("Change Input Strategy (1)")
+        if self.players.checks_duplicates:
+            print("Remove duplicate player checking (2)")
+        else:
+            print("Add duplicate player checking (2)")
+        choice = int(input())
+        if choice == 1:
+            pass
+        elif choice == 2:
+            self.players.checks_duplicates = not self.players.checks_duplicates
+        
         
     
     
-'''
--Import players from a file
- -Presumably a file name can be entered
- -Presumably the file type can be asked for
--Export players to a file
- -Presumably a file name can be entered, make sure it's not the same as a different file
- - Presumably the file type can be asked for
-- Every time the year changes save the data for that year
-- When the user requests it change back to the data for that year
 
-file export and import saves mementos to files
-the process of creating a memento is confined to a strategy, a different type of memento is created for every kind of file
-ditto for reading froma  memento
-the caretaker is called for exporting and importing of mementos
-every time a year passes the caretaker is called and it creates a memento for that year
-
-'''
 if __name__ == "__main__":
     system = Database()
     system.start()
