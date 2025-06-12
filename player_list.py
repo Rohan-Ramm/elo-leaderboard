@@ -17,12 +17,13 @@ get_sorted_data: Lets the player decide what to sort by and how many players to 
 class Player_List():
     def __init__(self,creation_info=None):
         self._player_list = {}
+        self.checks_duplicates = True
         if creation_info:
             for player in creation_info.keys():
                 self._player_list[player] = Player(player,creation_info[player])
     def add_player(self,name):
         confirm = 'x'
-        while confirm != 'n' and confirm != 'y':
+        while confirm != 'n' and confirm != 'y' and self.checks_duplicates:
             confirm = input("The name " + name + " is not known to the system. Is this a new player? \nPress y for yes and n for no.\n").strip()
         if confirm == 'n':
             return False

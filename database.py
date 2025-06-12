@@ -212,9 +212,9 @@ class Database():
     def settings_menu(self):
         print("Change Input Strategy (1)")
         if self.players.checks_duplicates:
-            print("Remove duplicate player checking (2)")
+            print("Remove Duplicate Player Checking (2)")
         else:
-            print("Add duplicate player checking (2)")
+            print("Add Duplicate Player Checking (2)")
         choice = int(input())
         if choice == 1:
             pass
