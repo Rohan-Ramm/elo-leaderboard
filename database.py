@@ -220,6 +220,22 @@ class Database():
             pass
         elif choice == 2:
             self.players.checks_duplicates = not self.players.checks_duplicates
+            
+    def menu_creator(self,items):
+        for item,i in enumerate(items):
+            print(f"{item} ({i + 1})")
+        return self.menu_chooser(len(items))
+    def menu_chooser(self,upper_bound):
+        while True:
+            user_input = input("What do you choose? \n")
+            try:
+                choice = int(user_input)
+                if 1 <= choice <= upper_bound:
+                    break  # input is valid
+                else:
+                    print(f"Please enter a number between 1 and {upper_bound}.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
         
         
     
