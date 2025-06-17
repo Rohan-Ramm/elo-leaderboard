@@ -35,7 +35,7 @@ class Database():
         self.export_strategy = JsonExport()
         self.caretaker = Caretaker() 
         self.matches = Match_List()
-        self.mass_entry = False
+        self.streamlined_entry = False
     
     
     def start(self):
@@ -73,7 +73,10 @@ class Database():
         choice = self.menu_creator(options)
         file_options = ["Json", "CSV", "Plain Text"]
         if choice == 1:
-            self.add_games()
+            if self.streamlined_entry:
+                self.add_games_text()
+            else:
+                self.add_games_questions()
         elif choice == 2:
             #Ask for export strategy
             print("What type of file(s) do you want to export to?")
@@ -103,13 +106,7 @@ class Database():
                 self.export_strategy.export_file(self.get_data())
                 result = False
         elif choice == 4:
-            past_year = int(input("What year do you want to roll back to? \n").strip())
-            try:
-                self.players, self.matches = self.caretaker.revert_to_past_year(past_year)
-                self.current_year = past_year
-            except:
-                print("This is not a valid year.\n Please enter a year in which tournaments occur. \n")
-            #for verification ask the user if they want to print
+            self.caretaker.revert_to_past_year()
         elif choice == 5:
             category = input("What category should the leaderboard be sorted based on?").strip()
             while category != "elo" and category != "wins" and "alphabetic":
@@ -150,21 +147,29 @@ class Database():
             return False
         elif confirmation == 'y':
             return True
-    def add_games(self):
+    def add_games_questions(self):
         ongoing = True
         while ongoing:
             print(f"Okay, let's start inputting match data.")
             w_name = input("Who won this match?\n").strip()
             l_name = input("Who lost this match?\n").strip()
             tournament_name = input("What is the name of the tournament this match was played in? \n").strip()
-            tournament_year = int(input("What year was this match played? \n").strip())
-            while (tournament_year < self.current_year):
-                print("Matches cannot be entered out of order.")
-                print("If you entered data out of order press (1) to stop adding matches.\n After that use the rollback feature in the main menu to fix your data.")
-                result = input("If you made a typo while entering the year press any other button. You will be given the opportunity to reinput the year.\n").strip()
-                if result == '1':
-                    return
-                tournament_year = int(input("What year was this match played? \n").strip())
+            while True:
+                try:
+                    tournament_year = int(input("What year was this match played? \n").strip())
+                    if tournament_year < self.current_year:
+                        print("Matches cannot be entered out of order.")
+                        print("If you entered data out of order, press (1) to stop adding matches.")
+                        print("After that, use the rollback feature in the main menu to fix your data.")
+                        result = input(
+                            "If you made a typo while entering the year, press any other key to re-enter the year.\n"
+                        ).strip()
+                        if result == '1':
+                            return
+                    else:
+                        break  
+                except ValueError:
+                    print("Invalid input. Please enter a valid year as a number.")
             if (tournament_year > self.current_year):
                 print("New Year")
                 self.caretaker.take_snapshot(self.current_year,self.get_data())
@@ -177,6 +182,69 @@ class Database():
             while confirmation != 'y' and confirmation != 'n':
                 confirmation = input("Invalid Input. \nPrint y for yes, print n for no.\n").strip()
             ongoing = confirmation == 'y'
+        
+    def add_games_text(self):
+        ongoing = True
+        print("Enter the results of the match in the following format.")
+        print("During [Year of Match] [Match Winner] defeated [Match Loser] for [Tournament name].")
+        while ongoing:
+            try:
+                match_info = input("Enter Match Results: \n")
+                during_index = match_info.find("During ") + len("During ")
+                year_end = match_info.find(" ", during_index)
+                year = match_info[during_index:year_end]
+                defeated_index = match_info.find("defeated")
+                winner = match_info[year_end:defeated_index].strip()
+                for_index = match_info.find("for", defeated_index)
+                loser = match_info[defeated_index + len("defeated"):for_index].strip()
+                tournament_name = match_info[for_index + len("for"):].strip().rstrip(".")
+                if tournament_year < self.current_year:
+                    raise ValueError()
+                if (tournament_year > self.current_year):
+                    print("New Year")
+                    self.caretaker.take_snapshot(self.current_year,self.get_data())
+                    self.current_year = tournament_year
+                winner = self.players.get_player(w_name)
+                loser = self.players.get_player(l_name)
+                self.matches.add_match(winner,loser,tournament_year,tournament_name)
+                print("Match has been added.")
+            except:
+                print("There was an error inputting data. Match was not added.")
+            confirmation = input("Are there any more matches? \nPrint y for yes, print n for no.\n").strip()
+            while confirmation != 'y' and confirmation != 'n':
+                confirmation = input("Invalid Input. \nPrint y for yes, print n for no.\n").strip()
+            ongoing = confirmation == 'y'
+        
+        
+        
+        while ongoing:
+            print(f"Okay, let's start inputting match data.")
+            w_name = input("Who won this match?\n").strip()
+            l_name = input("Who lost this match?\n").strip()
+            tournament_name = input("What is the name of the tournament this match was played in? \n").strip()
+            while True:
+                try:
+                    tournament_year = int(input("What year was this match played? \n").strip())
+                    if tournament_year < self.current_year:
+                        print("Matches cannot be entered out of order.")
+                        print("If you entered data out of order, press (1) to stop adding matches.")
+                        print("After that, use the rollback feature in the main menu to fix your data.")
+                        result = input(
+                            "If you made a typo while entering the year, press any other key to re-enter the year.\n"
+                        ).strip()
+                        if result == '1':
+                            return
+                    else:
+                        break  
+                except ValueError:
+                    print("Invalid input. Please enter a valid year as a number.")
+            if (tournament_year > self.current_year):
+                print("New Year")
+                self.caretaker.take_snapshot(self.current_year,self.get_data())
+                self.current_year = tournament_year
+            winner = self.players.get_player(w_name)
+            loser = self.players.get_player(l_name)
+            self.matches.add_match(winner,loser,tournament_year,tournament_name)
         
     def console_output(self):
         print()
@@ -197,7 +265,7 @@ class Database():
             options.append("Add Duplicate Player Checking (2)")
         choice = self.menu_creator(options)
         if choice == 1:
-            pass
+            streamlined_entry = not streamlined_entry
         elif choice == 2:
             self.players.checks_duplicates = not self.players.checks_duplicates
             
