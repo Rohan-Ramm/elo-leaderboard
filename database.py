@@ -40,22 +40,11 @@ class Database():
     
     def start(self):
         print("Main Menu")
-        print("Start new database (1)")
-        print("Load database from file (2)")
-        choice = int(input("Quit (3) \n"))
-        #switch
-        while choice != 1 and choice != 2 and choice != 3:
-            print("Invalid Input")
-            choice = int(input("Enter a valid input \n"))
+        options = ["Start new database", "Load database from file","Quit"]
+        choice = self.menu_creator(options)
         if choice == 2:
-            print("What type of file(s) do you want to import from?")
-            print("Json (1)")
-            print("CSV (2)")
-            print("Plain Text (3)")
-            choice = int(input("What do you choose? \n"))
-            while choice < 1 or choice > 3:
-                print("Invalid Input")
-                choice = int(input("Enter a valid input \n"))
+            file_options = ["Json", "CSV", "Plain Text"]
+            choice = self.menu_creator(file_options)
             if choice == 1:
                 self.import_strategy = JsonImport()
             elif choice == 2:
@@ -79,10 +68,10 @@ class Database():
         print("Print All Data (6)")
         print("Change Settings (7)")
         print("Exit (8)")
-        choice = int(input("What do you choose? \n"))
-        while choice < 1 or choice > 8:
-            print("Invalid Input")
-            choice = int(input("Enter a valid input \n"))
+        options = ["Add games", "Save", "Save and Exit", "Roll back to last year",
+                   "Print leaderboard", "Print All Data", "Change Settings", "Exit"]
+        choice = self.menu_creator(options)
+        file_options = ["Json", "CSV", "Plain Text"]
         if choice == 1:
             self.add_games()
         elif choice == 2:
@@ -91,10 +80,7 @@ class Database():
             print("Json (1)")
             print("CSV (2)")
             print("Plain Text (3)")
-            choice = int(input("What do you choose? \n"))
-            while choice < 1 or choice > 3:
-                print("Invalid Input")
-                choice = int(input("Enter a valid input \n"))
+            choice = self.menu_creator(file_options)
             if choice == 1:
                 self.export_strategy = JsonExport()
             elif choice == 2:
@@ -107,13 +93,7 @@ class Database():
             confirmation = self.secure_confimation()
             if confirmation:
                 print("What type of file(s) do you want to export to?")
-                print("Json (1)")
-                print("CSV (2)")
-                print("Plain Text (3)")
-                choice = int(input("What do you choose? \n"))
-                while choice < 1 or choice > 3:
-                    print("Invalid Input")
-                    choice = int(input("Enter a valid input \n"))
+                choice = self.menu_creator(file_options)
                 if choice == 1:
                     self.export_strategy = JsonExport()
                 elif choice == 2:
@@ -210,12 +190,12 @@ class Database():
         print()
         
     def settings_menu(self):
-        print("Change Input Strategy (1)")
+        options = ["Change Input Strategy"]
         if self.players.checks_duplicates:
-            print("Remove Duplicate Player Checking (2)")
+            options.append("Remove Duplicate Player Checking (2)")
         else:
-            print("Add Duplicate Player Checking (2)")
-        choice = int(input())
+            options.append("Add Duplicate Player Checking (2)")
+        choice = self.menu_creator(options)
         if choice == 1:
             pass
         elif choice == 2:
