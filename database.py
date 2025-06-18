@@ -33,7 +33,7 @@ class Database():
         self.current_year = current_year
         self.import_strategy = JsonImport()
         self.export_strategy = JsonExport()
-        self.caretaker = Caretaker() 
+        self.caretaker = Caretaker(self) 
         self.matches = Match_List()
         self.streamlined_entry = False
     
@@ -60,14 +60,6 @@ class Database():
     def cycle(self):
         result = True
         print("Menu")
-        print("Add games (1)")
-        print("Save (2)")
-        print("Save and Exit (3)")
-        print("Roll back to last year (4)")
-        print("Print leaderboard (5)")
-        print("Print All Data (6)")
-        print("Change Settings (7)")
-        print("Exit (8)")
         options = ["Add games", "Save", "Save and Exit", "Roll back to last year",
                    "Print leaderboard", "Print All Data", "Change Settings", "Exit"]
         choice = self.menu_creator(options)
@@ -192,11 +184,11 @@ class Database():
                 match_info = input("Enter Match Results: \n")
                 during_index = match_info.find("During ") + len("During ")
                 year_end = match_info.find(" ", during_index)
-                year = match_info[during_index:year_end]
+                tournament_year = int(match_info[during_index:year_end])
                 defeated_index = match_info.find("defeated")
-                winner = match_info[year_end:defeated_index].strip()
+                w_name = match_info[year_end:defeated_index].strip()
                 for_index = match_info.find("for", defeated_index)
-                loser = match_info[defeated_index + len("defeated"):for_index].strip()
+                l_name = match_info[defeated_index + len("defeated"):for_index].strip()
                 tournament_name = match_info[for_index + len("for"):].strip().rstrip(".")
                 if tournament_year < self.current_year:
                     raise ValueError()
@@ -260,12 +252,12 @@ class Database():
     def settings_menu(self):
         options = ["Change Input Strategy"]
         if self.players.checks_duplicates:
-            options.append("Remove Duplicate Player Checking (2)")
+            options.append("Remove Duplicate Player Checking")
         else:
-            options.append("Add Duplicate Player Checking (2)")
+            options.append("Add Duplicate Player Checking")
         choice = self.menu_creator(options)
         if choice == 1:
-            streamlined_entry = not streamlined_entry
+            self.streamlined_entry = not self.streamlined_entry
         elif choice == 2:
             self.players.checks_duplicates = not self.players.checks_duplicates
             

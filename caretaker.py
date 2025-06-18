@@ -1,7 +1,9 @@
 import json
 from player_list import Player_List
 from match_list import Match_List
-from database import Database
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from database import Database
 '''
 Description: The caretaker saves previous states of the leaderboard.
              These states can be restored if the user makes an error.
@@ -19,7 +21,7 @@ class Caretaker():
     #takes the data and saves it to a hashmap with the year as the key
     def take_snapshot(self,year, data):
         self.snapshots[year] = data
-    #raise error if year not in map, otherwise return a correct player list and tournament history
+        
     def revert_to_past_year(self,year):
         while True:
             try:
