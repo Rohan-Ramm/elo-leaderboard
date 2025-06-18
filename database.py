@@ -71,10 +71,6 @@ class Database():
                 self.add_games_questions()
         elif choice == 2:
             #Ask for export strategy
-            print("What type of file(s) do you want to export to?")
-            print("Json (1)")
-            print("CSV (2)")
-            print("Plain Text (3)")
             choice = self.menu_creator(file_options)
             if choice == 1:
                 self.export_strategy = JsonExport()
@@ -143,12 +139,12 @@ class Database():
         ongoing = True
         while ongoing:
             print(f"Okay, let's start inputting match data.")
-            w_name = input("Who won this match?\n").strip()
-            l_name = input("Who lost this match?\n").strip()
-            tournament_name = input("What is the name of the tournament this match was played in? \n").strip()
+            w_name = input("Who won this match? ").strip()
+            l_name = input("Who lost this match? ").strip()
+            tournament_name = input("What is the name of the tournament this match was played in? ").strip()
             while True:
                 try:
-                    tournament_year = int(input("What year was this match played? \n").strip())
+                    tournament_year = int(input("What year was this match played? ").strip())
                     if tournament_year < self.current_year:
                         print("Matches cannot be entered out of order.")
                         print("If you entered data out of order, press (1) to stop adding matches.")
@@ -163,13 +159,14 @@ class Database():
                 except ValueError:
                     print("Invalid input. Please enter a valid year as a number.")
             if (tournament_year > self.current_year):
-                print("New Year")
+                print("Happy New Year!")
                 self.caretaker.take_snapshot(self.current_year,self.get_data())
                 self.current_year = tournament_year
             winner = self.players.get_player(w_name)
             loser = self.players.get_player(l_name)
             self.matches.add_match(winner,loser,tournament_year,tournament_name)
             print("Match has been added.")
+            print()
             confirmation = input("Are there any more matches? \nPrint y for yes, print n for no.\n").strip()
             while confirmation != 'y' and confirmation != 'n':
                 confirmation = input("Invalid Input. \nPrint y for yes, print n for no.\n").strip()
@@ -193,13 +190,14 @@ class Database():
                 if tournament_year < self.current_year:
                     raise ValueError()
                 if (tournament_year > self.current_year):
-                    print("New Year")
+                    print("Happy New Year!")
                     self.caretaker.take_snapshot(self.current_year,self.get_data())
                     self.current_year = tournament_year
                 winner = self.players.get_player(w_name)
                 loser = self.players.get_player(l_name)
                 self.matches.add_match(winner,loser,tournament_year,tournament_name)
                 print("Match has been added.")
+                print()
             except:
                 print("There was an error inputting data. Match was not added.")
             confirmation = input("Are there any more matches? \nPrint y for yes, print n for no.\n").strip()
@@ -208,38 +206,7 @@ class Database():
             ongoing = confirmation == 'y'
         
         
-        
-        while ongoing:
-            print(f"Okay, let's start inputting match data.")
-            w_name = input("Who won this match?\n").strip()
-            l_name = input("Who lost this match?\n").strip()
-            tournament_name = input("What is the name of the tournament this match was played in? \n").strip()
-            while True:
-                try:
-                    tournament_year = int(input("What year was this match played? \n").strip())
-                    if tournament_year < self.current_year:
-                        print("Matches cannot be entered out of order.")
-                        print("If you entered data out of order, press (1) to stop adding matches.")
-                        print("After that, use the rollback feature in the main menu to fix your data.")
-                        result = input(
-                            "If you made a typo while entering the year, press any other key to re-enter the year.\n"
-                        ).strip()
-                        if result == '1':
-                            return
-                    else:
-                        break  
-                except ValueError:
-                    print("Invalid input. Please enter a valid year as a number.")
-            if (tournament_year > self.current_year):
-                print("New Year")
-                self.caretaker.take_snapshot(self.current_year,self.get_data())
-                self.current_year = tournament_year
-            winner = self.players.get_player(w_name)
-            loser = self.players.get_player(l_name)
-            self.matches.add_match(winner,loser,tournament_year,tournament_name)
-        
     def console_output(self):
-        print()
         data = json.loads(self.get_data())
         print("Players:")
         for name,stats in data["Players"].items():
@@ -264,10 +231,12 @@ class Database():
     def menu_creator(self,items):
         for i,item in enumerate(items):
             print(f"{item} ({i + 1})")
+        print()
         return self.menu_chooser(len(items))
     def menu_chooser(self,upper_bound):
         while True:
             user_input = input("What do you choose? \n")
+            print()
             try:
                 choice = int(user_input)
                 if 1 <= choice <= upper_bound:
