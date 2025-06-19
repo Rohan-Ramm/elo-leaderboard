@@ -33,28 +33,18 @@ class Database():
         self.current_year = current_year
         self.import_strategy = JsonImport()
         self.export_strategy = JsonExport()
-        self.caretaker = Caretaker() 
+        self.caretaker = Caretaker(self) 
         self.matches = Match_List()
+        self.streamlined_entry = False
     
     
     def start(self):
         print("Main Menu")
-        print("Start new database (1)")
-        print("Load database from file (2)")
-        choice = int(input("Quit (3) \n"))
-        #switch
-        while choice != 1 and choice != 2 and choice != 3:
-            print("Invalid Input")
-            choice = int(input("Enter a valid input \n"))
+        options = ["Start new database", "Load database from file","Quit"]
+        choice = self.menu_creator(options)
         if choice == 2:
-            print("What type of file(s) do you want to import from?")
-            print("Json (1)")
-            print("CSV (2)")
-            print("Plain Text (3)")
-            choice = int(input("What do you choose? \n"))
-            while choice < 1 or choice > 3:
-                print("Invalid Input")
-                choice = int(input("Enter a valid input \n"))
+            file_options = ["Json", "CSV", "Plain Text"]
+            choice = self.menu_creator(file_options)
             if choice == 1:
                 self.import_strategy = JsonImport()
             elif choice == 2:
@@ -70,29 +60,18 @@ class Database():
     def cycle(self):
         result = True
         print("Menu")
-        print("Add games (1)")
-        print("Save (2)")
-        print("Save and Exit (3)")
-        print("Roll back to last year (4)")
-        print("Print leaderboard (5)")
-        print("Print All Data (6)")
-        print("Exit (7)")
-        choice = int(input("What do you choose? \n"))
-        while choice < 1 or choice > 7:
-            print("Invalid Input")
-            choice = int(input("Enter a valid input \n"))
+        options = ["Add games", "Save", "Save and Exit", "Roll back to last year",
+                   "Print leaderboard", "Print All Data", "Change Settings", "Exit"]
+        choice = self.menu_creator(options)
+        file_options = ["Json", "CSV", "Plain Text"]
         if choice == 1:
-            self.add_games()
+            if self.streamlined_entry:
+                self.add_games_text()
+            else:
+                self.add_games_questions()
         elif choice == 2:
             #Ask for export strategy
-            print("What type of file(s) do you want to export to?")
-            print("Json (1)")
-            print("CSV (2)")
-            print("Plain Text (3)")
-            choice = int(input("What do you choose? \n"))
-            while choice < 1 or choice > 3:
-                print("Invalid Input")
-                choice = int(input("Enter a valid input \n"))
+            choice = self.menu_creator(file_options)
             if choice == 1:
                 self.export_strategy = JsonExport()
             elif choice == 2:
@@ -105,13 +84,7 @@ class Database():
             confirmation = self.secure_confimation()
             if confirmation:
                 print("What type of file(s) do you want to export to?")
-                print("Json (1)")
-                print("CSV (2)")
-                print("Plain Text (3)")
-                choice = int(input("What do you choose? \n"))
-                while choice < 1 or choice > 3:
-                    print("Invalid Input")
-                    choice = int(input("Enter a valid input \n"))
+                choice = self.menu_creator(file_options)
                 if choice == 1:
                     self.export_strategy = JsonExport()
                 elif choice == 2:
@@ -121,13 +94,7 @@ class Database():
                 self.export_strategy.export_file(self.get_data())
                 result = False
         elif choice == 4:
-            past_year = int(input("What year do you want to roll back to? \n").strip())
-            try:
-                self.players, self.matches = self.caretaker.revert_to_past_year(past_year)
-                self.current_year = past_year
-            except:
-                print("This is not a valid year.\n Please enter a year in which tournaments occur. \n")
-            #for verification ask the user if they want to print
+            self.caretaker.revert_to_past_year()
         elif choice == 5:
             category = input("What category should the leaderboard be sorted based on?").strip()
             while category != "elo" and category != "wins" and "alphabetic":
@@ -143,6 +110,8 @@ class Database():
         elif choice == 6:
             self.console_output()
         elif choice == 7:
+            self.settings_menu()
+        elif choice == 8:
             result = False
         return result
     def get_data(self):
@@ -166,36 +135,78 @@ class Database():
             return False
         elif confirmation == 'y':
             return True
-    def add_games(self):
+    def add_games_questions(self):
         ongoing = True
         while ongoing:
             print(f"Okay, let's start inputting match data.")
-            w_name = input("Who won this match?\n").strip()
-            l_name = input("Who lost this match?\n").strip()
-            tournament_name = input("What is the name of the tournament this match was played in? \n").strip()
-            tournament_year = int(input("What year was this match played? \n").strip())
-            while (tournament_year < self.current_year):
-                print("Matches cannot be entered out of order.")
-                print("If you entered data out of order press (1) to stop adding matches.\n After that use the rollback feature in the main menu to fix your data.")
-                result = input("If you made a typo while entering the year press any other button. You will be given the opportunity to reinput the year.\n").strip()
-                if result == '1':
-                    return
-                tournament_year = int(input("What year was this match played? \n").strip())
+            w_name = input("Who won this match? ").strip()
+            l_name = input("Who lost this match? ").strip()
+            tournament_name = input("What is the name of the tournament this match was played in? ").strip()
+            while True:
+                try:
+                    tournament_year = int(input("What year was this match played? ").strip())
+                    if tournament_year < self.current_year:
+                        print("Matches cannot be entered out of order.")
+                        print("If you entered data out of order, press (1) to stop adding matches.")
+                        print("After that, use the rollback feature in the main menu to fix your data.")
+                        result = input(
+                            "If you made a typo while entering the year, press any other key to re-enter the year.\n"
+                        ).strip()
+                        if result == '1':
+                            return
+                    else:
+                        break  
+                except ValueError:
+                    print("Invalid input. Please enter a valid year as a number.")
             if (tournament_year > self.current_year):
-                print("New Year")
+                print("Happy New Year!")
                 self.caretaker.take_snapshot(self.current_year,self.get_data())
                 self.current_year = tournament_year
             winner = self.players.get_player(w_name)
             loser = self.players.get_player(l_name)
             self.matches.add_match(winner,loser,tournament_year,tournament_name)
             print("Match has been added.")
+            print()
             confirmation = input("Are there any more matches? \nPrint y for yes, print n for no.\n").strip()
             while confirmation != 'y' and confirmation != 'n':
                 confirmation = input("Invalid Input. \nPrint y for yes, print n for no.\n").strip()
             ongoing = confirmation == 'y'
         
+    def add_games_text(self):
+        ongoing = True
+        print("Enter the results of the match in the following format.")
+        print("During [Year of Match] [Match Winner] defeated [Match Loser] for [Tournament name].")
+        while ongoing:
+            try:
+                match_info = input("Enter Match Results: \n")
+                during_index = match_info.find("During ") + len("During ")
+                year_end = match_info.find(" ", during_index)
+                tournament_year = int(match_info[during_index:year_end])
+                defeated_index = match_info.find("defeated")
+                w_name = match_info[year_end:defeated_index].strip()
+                for_index = match_info.find("for", defeated_index)
+                l_name = match_info[defeated_index + len("defeated"):for_index].strip()
+                tournament_name = match_info[for_index + len("for"):].strip().rstrip(".")
+                if tournament_year < self.current_year:
+                    raise ValueError()
+                if (tournament_year > self.current_year):
+                    print("Happy New Year!")
+                    self.caretaker.take_snapshot(self.current_year,self.get_data())
+                    self.current_year = tournament_year
+                winner = self.players.get_player(w_name)
+                loser = self.players.get_player(l_name)
+                self.matches.add_match(winner,loser,tournament_year,tournament_name)
+                print("Match has been added.")
+                print()
+            except:
+                print("There was an error inputting data. Match was not added.")
+            confirmation = input("Are there any more matches? \nPrint y for yes, print n for no.\n").strip()
+            while confirmation != 'y' and confirmation != 'n':
+                confirmation = input("Invalid Input. \nPrint y for yes, print n for no.\n").strip()
+            ongoing = confirmation == 'y'
+        
+        
     def console_output(self):
-        print()
         data = json.loads(self.get_data())
         print("Players:")
         for name,stats in data["Players"].items():
@@ -205,26 +216,40 @@ class Database():
             print(f"During {match["Year"]} {match["Winner"]} defeated {match["Loser"]} for game {match["Match Number"]} of {match["Tour"]}.")
         print()
         
+    def settings_menu(self):
+        options = ["Change Input Strategy"]
+        if self.players.checks_duplicates:
+            options.append("Remove Duplicate Player Checking")
+        else:
+            options.append("Add Duplicate Player Checking")
+        choice = self.menu_creator(options)
+        if choice == 1:
+            self.streamlined_entry = not self.streamlined_entry
+        elif choice == 2:
+            self.players.checks_duplicates = not self.players.checks_duplicates
+            
+    def menu_creator(self,items):
+        for i,item in enumerate(items):
+            print(f"{item} ({i + 1})")
+        print()
+        return self.menu_chooser(len(items))
+    def menu_chooser(self,upper_bound):
+        while True:
+            user_input = input("What do you choose? \n")
+            print()
+            try:
+                choice = int(user_input)
+                if 1 <= choice <= upper_bound:
+                    return choice
+                else:
+                    print(f"Invalid input. Please enter a number between 1 and {upper_bound}.")
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
+        
         
     
     
-'''
--Import players from a file
- -Presumably a file name can be entered
- -Presumably the file type can be asked for
--Export players to a file
- -Presumably a file name can be entered, make sure it's not the same as a different file
- - Presumably the file type can be asked for
-- Every time the year changes save the data for that year
-- When the user requests it change back to the data for that year
 
-file export and import saves mementos to files
-the process of creating a memento is confined to a strategy, a different type of memento is created for every kind of file
-ditto for reading froma  memento
-the caretaker is called for exporting and importing of mementos
-every time a year passes the caretaker is called and it creates a memento for that year
-
-'''
 if __name__ == "__main__":
     system = Database()
     system.start()
