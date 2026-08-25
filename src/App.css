@@ -5,7 +5,7 @@
   font-weight: 400;
 
   color: #0f0f0f;
-  background-color: #f6f6f6;
+  background-color: #000000;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,8 +18,8 @@
   margin: 0;
   padding-top: 10vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
@@ -40,4 +40,58 @@ a:hover {
 
 h1 {
   text-align: center;
+}
+
+/* Main dark teal container */
+.menu-container {
+  background-color: #125c5d; /* Dark teal */
+  padding: 40px;
+  border-radius: 40px;
+  width: 450px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow */
+}
+
+/* Title styling */
+.menu-title {
+  color: white;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-size: 36px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Grid layout for the 6 buttons */
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns of equal width */
+  gap: 20px; /* Space between buttons */
+}
+
+/* Individual button styling */
+.menu-btn {
+  background-color: #13898f; /* Lighter teal */
+  color: white;
+  border: 1.5px solid #d3e2e3; /* Light border */
+  border-radius: 12px;
+  padding: 15px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  min-height: 65px; /* Ensures buttons match height even if text wraps */
+  
+  /* Flexbox to perfectly center multiline text */
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1.3;
+  
+  /* Smooth transition for hover effect */
+  transition: background-color 0.2s ease;
+}
+
+/* Basic hover effect */
+.menu-btn:hover {
+  background-color: #10757a;
 }
