@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import AddMultiple from "./subpages/add-multiple";
@@ -11,6 +11,10 @@ import MainMenu from "./subpages/main-menu";
 
 function App() {
   const [page,setPage] = useState("Add Multiple")
+
+  const switchPage = (newPage: string) => {
+    setPage(newPage);
+  };
 
   switch (page) {
     case "add-multiple":
@@ -32,7 +36,7 @@ function App() {
       return <ViewLeaderboard />;
   
     default:
-      return <MainMenu/>;
+      return <MainMenu onClick={switchPage} />;
   }
 }
 
