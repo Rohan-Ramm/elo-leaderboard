@@ -21,6 +21,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+  position: relative;
 }
 
 .row {
@@ -94,4 +95,16 @@ h1 {
 /* Basic hover effect */
 .menu-btn:hover {
   background-color: #10757a;
+}
+
+#return-to-menu {
+  background-color: #BAC8D3; /* Lighter teal */
+  color: black;
+  border: 1.5px solid black;
+  font-size: 32px;
+  border-radius: 10px;
+  padding: 3px 6px;
+  position: absolute;
+  top: 10px;
+  left: 20px;
 }

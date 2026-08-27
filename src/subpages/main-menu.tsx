@@ -1,12 +1,14 @@
-import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { useContext } from "react";
+import { AppContext } from "../App";
 import "../App.css";
 
-interface mainMenuProps {
-    onClick: (pageName: string) => void
-}
+function MainMenu() {
 
-function MainMenu({onClick}: mainMenuProps) {
+  const context = useContext(AppContext)
+  
+  if (!context) {
+    throw new Error("GoToMenu must be used inside AppContext.Provider");
+  }
 
   return (
     <main className="container">
@@ -14,14 +16,14 @@ function MainMenu({onClick}: mainMenuProps) {
         <h1 className="menu-title">Main Menu</h1>
         
         <div className="button-grid">
-            <button className="menu-btn" onClick={() => onClick('leaderboard')}>View Leaderboard</button>
-            <button className="menu-btn" onClick={() => onClick('settings')}>Settings</button>
+            <button className="menu-btn" onClick={() => context.setPage('leaderboard')}>View Leaderboard</button>
+            <button className="menu-btn" onClick={() => context.setPage('settings')}>Settings</button>
             
-            <button className="menu-btn" onClick={() => onClick('add-single')}>Add Game (single)</button>
-            <button className="menu-btn" onClick={() => onClick('add-multiple')}>Add Game<br/>(multiple)</button>
+            <button className="menu-btn" onClick={() => context.setPage('add-single')}>Add Game (single)</button>
+            <button className="menu-btn" onClick={() => context.setPage('add-multiple')}>Add Game<br/>(multiple)</button>
             
-            <button className="menu-btn" onClick={() => onClick('import-league')}>Import League</button>
-            <button className="menu-btn" onClick={() => onClick('export-league')}>Export League</button>
+            <button className="menu-btn" onClick={() => context.setPage('import-league')}>Import League</button>
+            <button className="menu-btn" onClick={() => context.setPage('export-league')}>Export League</button>
         </div>
     </div>
     </main>
