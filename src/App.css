@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: clamp(10px, 4vw, 18px);
+  line-height: clamp(14px, 4vw, 24px);
   font-weight: 400;
 
   color: #0f0f0f;
@@ -46,9 +46,10 @@ h1 {
 /* Main dark teal container */
 .menu-container {
   background-color: #125c5d; /* Dark teal */
-  padding: 40px;
+  padding: 3vh;
   border-radius: 40px;
-  width: 450px;
+  width: 50vh;
+  height: 32vh;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow */
 }
 
@@ -57,10 +58,10 @@ h1 {
   color: white;
   text-align: center;
   margin-top: 0;
-  margin-bottom: 30px;
-  font-size: 36px;
+  margin-bottom: 2rem;
+  font-size: 2.25rem;
   font-weight: bold;
-  letter-spacing: 1px;
+  letter-spacing: 0.05rem;
 }
 
 /* Grid layout for the 6 buttons */
@@ -76,8 +77,8 @@ h1 {
   color: white;
   border: 1.5px solid #d3e2e3; /* Light border */
   border-radius: 12px;
-  padding: 15px 10px;
-  font-size: 16px;
+  padding: 0.6rem 0.4rem;
+  font-size: 1.1rem;
   cursor: pointer;
   min-height: 65px; /* Ensures buttons match height even if text wraps */
   
@@ -98,13 +99,18 @@ h1 {
 }
 
 #return-to-menu {
-  background-color: #BAC8D3; /* Lighter teal */
+  background-color: #BAC8D3; /* Silver */
   color: black;
   border: 1.5px solid black;
-  font-size: 32px;
+  font-size: 1.25rem; 
   border-radius: 10px;
-  padding: 3px 6px;
+  padding: 0.2rem 0.4rem;
   position: absolute;
-  top: 10px;
-  left: 20px;
+  top: 0.55rem;
+  left: 1.1rem;
+  transition: background-color 0.2s ease;
+}
+
+#return-to-menu:hover {
+  background-color: #8D97A0;
 }
