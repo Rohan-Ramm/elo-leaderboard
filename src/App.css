@@ -4,7 +4,7 @@
   line-height: clamp(14px, 4vw, 24px);
   font-weight: 400;
 
-  color: #0f0f0f;
+  color: white;
   background-color: #636363;
 
   font-synthesis: none;
@@ -27,6 +27,17 @@
 .row {
   display: flex;
   justify-content: center;
+  gap: 20px;
+}
+
+.big-box {
+  background-color: #13898f; /* Lighter teal */
+  color: white;
+  border: 1.5px solid #d3e2e3; /* Light border */
+  border-radius: 12px;
+  padding: 0.6rem 0.4rem;
+  box-sizing: border-box;
+  width: 75%
 }
 
 a {
@@ -53,6 +64,17 @@ h1 {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow */
 }
 
+.central-column {
+  background-color: #125c5d; /* Dark teal */
+  border-radius: 40px;
+  max-width: 60vh;
+  max-height: 80vh;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow */
+  display: flex;
+  flex-direction: column;
+  padding: 3vh
+}
+
 /* Title styling */
 .menu-title {
   color: white;
@@ -71,8 +93,7 @@ h1 {
   gap: 20px; /* Space between buttons */
 }
 
-/* Individual button styling */
-.menu-btn {
+button {
   background-color: #13898f; /* Lighter teal */
   color: white;
   border: 1.5px solid #d3e2e3; /* Light border */
@@ -80,7 +101,6 @@ h1 {
   padding: 0.6rem 0.4rem;
   font-size: 1.1rem;
   cursor: pointer;
-  min-height: 65px; /* Ensures buttons match height even if text wraps */
   
   /* Flexbox to perfectly center multiline text */
   display: flex; 
@@ -91,26 +111,50 @@ h1 {
   
   /* Smooth transition for hover effect */
   transition: background-color 0.2s ease;
+
+  aspect-ratio: 5 / 2;
+}
+
+/* Individual button styling */
+.menu-btn {
+  min-height: 65px; /* Ensures buttons match height even if text wraps */
+  aspect-ratio: 7 / 2;
+}
+
+.selected-btn {
+  font-weight: bold;
+  background-color: #10757a;
+  border: 2.5px solid #d3e2e3;
 }
 
 /* Basic hover effect */
-.menu-btn:hover {
+button:hover {
   background-color: #10757a;
 }
 
 #return-to-menu {
+  margin-left: -3vh;
+  margin-top: -3vh;
   background-color: #BAC8D3; /* Silver */
   color: black;
   border: 1.5px solid black;
   font-size: 1.25rem; 
   border-radius: 10px;
   padding: 0.2rem 0.4rem;
-  position: absolute;
+  position: relative;
   top: 0.55rem;
   left: 1.1rem;
+  max-width: 20%;
+  max-height: 10%;
   transition: background-color 0.2s ease;
 }
 
 #return-to-menu:hover {
   background-color: #8D97A0;
+}
+
+#long-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

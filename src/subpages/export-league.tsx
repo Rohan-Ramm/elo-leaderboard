@@ -7,7 +7,8 @@ function ExportLeague() {
 
   return (
     <main className="container">
-      <p>Export League</p>
+      <GoToMenu/>
+      <h1>Export League</h1>
     </main>
   );
 }

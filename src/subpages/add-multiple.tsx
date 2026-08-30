@@ -7,7 +7,7 @@ function AddMultiple() {
 
   return (
     <main className="container">
-      <GoToMenu/>;
+      <GoToMenu/>
       <p>Add Multiple</p>
     </main>
   );

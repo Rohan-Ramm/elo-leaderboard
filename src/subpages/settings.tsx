@@ -7,8 +7,8 @@ function Settings() {
 
   return (
     <main className="container">
-      <GoToMenu/>;
-      <p>Settings</p>
+      <GoToMenu/>
+      <h1>Settings</h1>
     </main>
   );
 }
