@@ -65,7 +65,7 @@ function App() {
     default:
       return (
         <AppContext value={{setPage}}>
-          <MainMenu />;
+          <MainMenu />
         </AppContext>
       )
   }

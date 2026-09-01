@@ -27,7 +27,7 @@ function MainMenu() {
         </div>
     </div>
     </main>
-  );
+  )
 }
 
 export default MainMenu;

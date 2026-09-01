@@ -17,8 +17,8 @@ function ImportLeague() {
     event.preventDefault()
     console.log("Submitted info:",inputData)
     invoke('input_database',{inputFormat: importFormat, inputData: inputData}) // Does not currently exist
-    .then((message) => {
-      console.log(message);
+    .then(() => {
+      console.log("Successful");
       context.setPage("main-menu");
     })
     .catch((error) => {
@@ -46,7 +46,7 @@ function ImportLeague() {
             onChange={(e) => setInputData(e.target.value)}
           />
           <br></br>
-          <div className="row"><button type="submit" value="Submit">Submit</button></div>
+          <button type="submit" value="Submit">Submit</button>
         </form>
       </div>
     </main>

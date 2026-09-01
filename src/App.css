@@ -35,9 +35,18 @@
   color: white;
   border: 1.5px solid #d3e2e3; /* Light border */
   border-radius: 12px;
-  padding: 0.6rem 0.4rem;
   box-sizing: border-box;
   width: 75%
+}
+
+.text-box {
+  background-color: #13898f; /* Lighter teal */
+  color: white;
+  border: 1.5px solid #d3e2e3; /* Light border */
+  border-radius: 12px;
+  box-sizing: border-box;
+  width: 80%;
+  min-height: 10rem;
 }
 
 a {
@@ -57,22 +66,26 @@ h1 {
 /* Main dark teal container */
 .menu-container {
   background-color: #125c5d; /* Dark teal */
-  padding: 3vh;
+  padding: 1vh;
   border-radius: 40px;
+  min-width: 40rem;
+  min-height: 25.6rem; 
   width: 50vh;
   height: 32vh;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow */
 }
 
 .central-column {
+  position:relative;
   background-color: #125c5d; /* Dark teal */
   border-radius: 40px;
-  max-width: 60vh;
-  max-height: 80vh;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow */
   display: flex;
   flex-direction: column;
-  padding: 3vh
+  align-items: center;
+  padding: 3vh;
+  min-width: 25rem;
+  min-height: 25rem; 
 }
 
 /* Title styling */
@@ -133,15 +146,13 @@ button:hover {
 }
 
 #return-to-menu {
-  margin-left: -3vh;
-  margin-top: -3vh;
   background-color: #BAC8D3; /* Silver */
   color: black;
   border: 1.5px solid black;
   font-size: 1.25rem; 
   border-radius: 10px;
   padding: 0.2rem 0.4rem;
-  position: relative;
+  position: absolute;
   top: 0.55rem;
   left: 1.1rem;
   max-width: 20%;
@@ -153,8 +164,11 @@ button:hover {
   background-color: #8D97A0;
 }
 
-#long-answer {
+.long-answer {
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
+  width: 75%;
+  min-height: 85%;
 }
