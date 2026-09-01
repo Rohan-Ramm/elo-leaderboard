@@ -82,7 +82,21 @@
 }
 
 .text-bubble {
+  background-color: #13898f; /* Lighter teal */
+  color: white;
+  border: 1.5px solid #d3e2e3; /* Light border */
+  border-radius: 12px;
+  padding: 0.1rem 0.4rem;
+  font-size: 1.1rem;
+  
+  /* Flexbox to perfectly center multiline text */
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1.3;
 
+  aspect-ratio: 5 / 2;
 }
 
 a {

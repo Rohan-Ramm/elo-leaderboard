@@ -22,7 +22,7 @@ function ExportLeague() {
     <main className="container">
       <div className="central-column">
         <GoToMenu/>
-        <h2>Export League</h2>
+        <h1>Export League</h1>
         <div className="row">
             <button className={exportFormat === "JSON" ? "selected-btn" : ""} onClick={() => setExportFormat('JSON')}>JSON</button>
             <button className={exportFormat === "CSV" ? "selected-btn" : ""} onClick={() => setExportFormat('CSV')}>CSV</button>

@@ -32,7 +32,7 @@ function ImportLeague() {
       <div className="central-column">
         <GoToMenu/>
         
-        <h2>Import League</h2>
+        <h1>Import League</h1>
         <div className="row">
             <button className={importFormat === "JSON" ? "selected-btn" : ""} onClick={() => setImportFormat('JSON')}>JSON</button>
             <button className={importFormat === "CSV" ? "selected-btn" : ""} onClick={() => setImportFormat('CSV')}>CSV</button>
