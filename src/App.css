@@ -13,9 +13,9 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
-
+/* Formatted Containers */
 .container {
-  margin: 0;
+  margin: 0; 
   padding-top: 10vh;
   display: flex;
   justify-content: center;
@@ -28,39 +28,6 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-}
-
-.big-box {
-  background-color: #13898f; /* Lighter teal */
-  color: white;
-  border: 1.5px solid #d3e2e3; /* Light border */
-  border-radius: 12px;
-  box-sizing: border-box;
-  width: 75%
-}
-
-.text-box {
-  background-color: #13898f; /* Lighter teal */
-  color: white;
-  border: 1.5px solid #d3e2e3; /* Light border */
-  border-radius: 12px;
-  box-sizing: border-box;
-  width: 80%;
-  min-height: 10rem;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
 }
 
 /* Main dark teal container */
@@ -88,6 +55,50 @@ h1 {
   min-height: 25rem; 
 }
 
+/* Grid layout for the 6 buttons */
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns of equal width */
+  gap: 20px; /* Space between buttons */
+}
+
+.big-box {
+  background-color: #13898f; /* Lighter teal */
+  color: white;
+  border: 1.5px solid #d3e2e3; /* Light border */
+  border-radius: 12px;
+  box-sizing: border-box;
+  width: 75%
+}
+
+.text-box {
+  background-color: #13898f; /* Lighter teal */
+  color: white;
+  border: 1.5px solid #d3e2e3; /* Light border */
+  border-radius: 12px;
+  box-sizing: border-box;
+  width: 80%;
+  min-height: 10rem;
+}
+
+.text-bubble {
+
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  text-align: center;
+}
+
 /* Title styling */
 .menu-title {
   color: white;
@@ -99,12 +110,7 @@ h1 {
   letter-spacing: 0.05rem;
 }
 
-/* Grid layout for the 6 buttons */
-.button-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 columns of equal width */
-  gap: 20px; /* Space between buttons */
-}
+/* Buttons */
 
 button {
   background-color: #13898f; /* Lighter teal */
@@ -164,6 +170,7 @@ button:hover {
   background-color: #8D97A0;
 }
 
+/* Inputs */
 .long-answer {
   display: flex;
   flex-direction: column;
