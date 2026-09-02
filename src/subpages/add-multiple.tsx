@@ -28,7 +28,7 @@ Each game should be on a different line`
     })
     .catch((error) => {
       console.error(error);
-      alert("Import Failed: Try Again")
+      alert("Games could not be added: Try Again")
     })
   };
   return (

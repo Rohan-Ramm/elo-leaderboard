@@ -30,6 +30,19 @@
   gap: 20px;
 }
 
+.row-2 {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 100%
+}
+
+.row-2 input {
+  flex: 1;            /* Pushes all input right-edges to end at the exact same point */
+  width: 100%;
+  box-sizing: border-box; /* Prevents padding/borders from messing up alignment */
+}
+
 /* Main dark teal container */
 .menu-container {
   background-color: #125c5d; /* Dark teal */
@@ -52,7 +65,15 @@
   align-items: center;
   padding: 3vh;
   min-width: 25rem;
-  min-height: 25rem; 
+  min-height: 20rem; 
+}
+
+.field-list {
+  display:flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin: 1rem;
 }
 
 /* Grid layout for the 6 buttons */
@@ -87,6 +108,7 @@
   border: 1.5px solid #d3e2e3; /* Light border */
   border-radius: 12px;
   padding: 0.1rem 0.4rem;
+  height: 30px;
   font-size: 1.1rem;
   
   /* Flexbox to perfectly center multiline text */
