@@ -5,9 +5,9 @@ import AddMultiple from "./subpages/add-multiple";
 import AddSingle from "./subpages/add-single";
 import ExportLeague from "./subpages/export-league";
 import ImportLeague from "./subpages/import-league";
-import Settings from "./subpages/settings";
 import ViewLeaderboard from "./subpages/view-leaderboard";
 import MainMenu from "./subpages/main-menu";
+import FindPlayer from "./subpages/find-player";
 
 
 type AppContextType = {
@@ -48,10 +48,10 @@ function App() {
           <ImportLeague />;
         </AppContext>
       )
-    case "settings":
+    case "find-player":
       return (
         <AppContext value={{setPage}}>
-          <Settings />;
+          <FindPlayer />;
         </AppContext>
       )
   

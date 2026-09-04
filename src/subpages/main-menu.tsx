@@ -17,7 +17,7 @@ function MainMenu() {
         
         <div className="button-grid">
             <button className="menu-btn" onClick={() => context.setPage('leaderboard')}>View Leaderboard</button>
-            <button className="menu-btn" onClick={() => context.setPage('settings')}>Settings</button>
+            <button className="menu-btn" onClick={() => context.setPage('find-player')}>Find Player</button>
             
             <button className="menu-btn" onClick={() => context.setPage('add-single')}>Add Game (single)</button>
             <button className="menu-btn" onClick={() => context.setPage('add-multiple')}>Add Game<br/>(multiple)</button>

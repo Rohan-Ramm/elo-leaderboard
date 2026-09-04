@@ -15,6 +15,13 @@ function AddSingle() {
       return
     }
     invoke('add_game',{winner: winner, loser: loser, tournament: tournament, date: date})
+    .then(() => {
+      console.log("Successful");
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Game could not be added\n Try Again")
+    })
     winner.current = null
     loser.current = null
     tournament.current = null
