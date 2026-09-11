@@ -1,16 +1,16 @@
 import { useContext } from "react";
-import { AppContext } from "./App";
+import { PageSwapContext } from "./App";
 import "./App.css";
 
 function GoToMenu() {
-  const context = useContext(AppContext)
+  const pageSwapContext = useContext(PageSwapContext)
   
-  if (!context) {
-    throw new Error("GoToMenu must be used inside AppContext.Provider");
+  if (!pageSwapContext) {
+    throw new Error("GoToMenu must be used inside PageSwapContext.Provider");
   }
 
   return (
-    <button id="return-to-menu" onClick={() => context.setPage("main-menu")}>Back</button>
+    <button id="return-to-menu" onClick={() => pageSwapContext.setPage("main-menu")}>Back</button>
   );
 }
 

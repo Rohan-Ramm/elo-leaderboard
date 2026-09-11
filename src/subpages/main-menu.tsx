@@ -1,13 +1,13 @@
 import { useContext } from "react";
-import { AppContext } from "../App";
+import { PageSwapContext } from "../App";
 import "../App.css";
 
 function MainMenu() {
 
-  const context = useContext(AppContext)
+  const pageSwapContext = useContext(PageSwapContext)
   
-  if (!context) {
-    throw new Error("GoToMenu must be used inside AppContext.Provider");
+  if (!pageSwapContext) {
+    throw new Error("GoToMenu must be used inside PageSwapContext.Provider");
   }
 
   return (
@@ -16,14 +16,14 @@ function MainMenu() {
         <h1 className="menu-title">Main Menu</h1>
         
         <div className="button-grid">
-            <button className="menu-btn" onClick={() => context.setPage('leaderboard')}>View Leaderboard</button>
-            <button className="menu-btn" onClick={() => context.setPage('find-player')}>Find Player</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('leaderboard')}>View Leaderboard</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('find-player')}>Find Player</button>
             
-            <button className="menu-btn" onClick={() => context.setPage('add-single')}>Add Game (single)</button>
-            <button className="menu-btn" onClick={() => context.setPage('add-multiple')}>Add Game<br/>(multiple)</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-single')}>Add Game (single)</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-multiple')}>Add Game<br/>(multiple)</button>
             
-            <button className="menu-btn" onClick={() => context.setPage('import-league')}>Import League</button>
-            <button className="menu-btn" onClick={() => context.setPage('export-league')}>Export League</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('import-league')}>Import League</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('export-league')}>Export League</button>
         </div>
     </div>
     </main>

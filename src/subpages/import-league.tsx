@@ -1,16 +1,16 @@
 import { useState, useContext } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { AppContext } from "../App";
+import { PageSwapContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
 
 function ImportLeague() {
   const [importFormat,setImportFormat] = useState("JSON")
   const [inputData,setInputData] = useState("")
-  const context = useContext(AppContext)
+  const pageSwapContext = useContext(PageSwapContext)
 
-  if (!context) {
-    throw new Error("ImportLeague must be used inside AppContext.Provider");
+  if (!pageSwapContext) {
+    throw new Error("ImportLeague must be used inside PageSwapContext.Provider");
   }
 
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -19,7 +19,7 @@ function ImportLeague() {
     invoke('input_database',{inputFormat: importFormat, inputData: inputData}) // Does not currently exist
     .then(() => {
       console.log("Successful");
-      context.setPage("main-menu");
+      pageSwapContext.setPage("main-menu");
     })
     .catch((error) => {
       console.error(error);

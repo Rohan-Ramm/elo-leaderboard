@@ -1,21 +1,21 @@
 import { useState,useContext,useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import GoToMenu from "../go-to-menu";
-import { AppContext } from "../App";
+import { PageSwapContext } from "../App";
 import "../App.css";
 
 function AddMultiple() {
   const [inputData,setInputData] = useState("")
   const tourName = useRef<HTMLInputElement>(null)
   const [presetTour,setPresetTour] = useState(false)
-  const context = useContext(AppContext)
+  const pageSwapContext = useContext(PageSwapContext)
 
   let text = `Post game information in the following format:
 {Winner},{Loser}, {Date}, {Tournament}
 Each game should be on a different line`
 
-  if (!context) {
-    throw new Error("ImportLeague must be used inside AppContext.Provider");
+  if (!pageSwapContext) {
+    throw new Error("ImportLeague must be used inside PageSwapContext.Provider");
   }
 
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -24,7 +24,7 @@ Each game should be on a different line`
     invoke('add_mult_games',{inputData: inputData, presetTour: presetTour, tourName: tName}) 
     .then(() => {
       console.log("Successful");
-      context.setPage("main-menu");
+      pageSwapContext.setPage("main-menu");
     })
     .catch((error) => {
       console.error(error);
