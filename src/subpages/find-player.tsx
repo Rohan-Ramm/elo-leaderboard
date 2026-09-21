@@ -19,7 +19,7 @@ function FindPlayer() {
     }
     try {
       const elo = await db.select<{ elo: number }[]>(
-        "SELECT elo FROM players WHERE name = $1;",["abcd"]
+        "SELECT elo FROM players WHERE name = $1;",["Bob"]
       );
       if(elo.length == 0) {
         console.log("Name not found")
