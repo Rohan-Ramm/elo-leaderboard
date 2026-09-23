@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
-import { invoke } from "@tauri-apps/api/core";
 import addGame from "../lib";
 import "../App.css";
 

@@ -1,7 +1,7 @@
 import { useState,useContext,useRef } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import GoToMenu from "../go-to-menu";
-import { PageSwapContext } from "../App";
+import { PageSwapContext, DbContext } from "../App";
+import addGame from "../lib";
 import "../App.css";
 
 function AddMultiple() {
@@ -9,6 +9,7 @@ function AddMultiple() {
   const tourName = useRef<HTMLInputElement>(null)
   const [presetTour,setPresetTour] = useState(false)
   const pageSwapContext = useContext(PageSwapContext)
+  const {db, loading} = useContext(DbContext)
 
   let text = `Post game information in the following format:
 {Winner},{Loser}, {Date}, {Tournament}
@@ -18,18 +19,39 @@ Each game should be on a different line`
     throw new Error("ImportLeague must be used inside PageSwapContext.Provider");
   }
 
-  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+    if (!db || loading) {
+      console.error("Database could not be accessed")
+      return
+    }
+
     event.preventDefault()
+
     const tName = tourName.current?.value ?? "";
-    invoke('add_mult_games',{inputData: inputData, presetTour: presetTour, tourName: tName}) 
-    .then(() => {
-      console.log("Successful");
-      pageSwapContext.setPage("main-menu");
-    })
-    .catch((error) => {
+    const gameList = inputData.split("\n")
+    let i = 0
+
+    await db.execute('BEGIN TRANSACTION;')
+    try {
+      while (i < gameList.length) {
+        let gameData = gameList[i].split(",")
+        if (presetTour) {
+          await addGame(gameData[0],gameData[1],tName,gameData[2],db)
+        } else {
+          await addGame(gameData[0],gameData[1],gameData[2],gameData[3],db)
+        }
+        i += 1
+      }
+    } catch(error) {
+      await db.execute('ROLLBACK;')
+      console.error("Error occured on: ",gameList[i])
       console.error(error);
       alert("Games could not be added: Try Again")
-    })
+      return
+    }
+    await db.execute('COMMIT;')
+    console.log("Successful");
+    pageSwapContext.setPage("main-menu");
   };
   return (
     <main className="container">
