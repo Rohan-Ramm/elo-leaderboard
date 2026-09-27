@@ -29,22 +29,21 @@ Each game should be on a different line`
 
     const tName = tourName.current?.value ?? "";
     const gameList = inputData.split("\n")
-    let i = 0
+    let currGame = null;
 
     await db.execute('BEGIN TRANSACTION;')
     try {
-      while (i < gameList.length) {
-        let gameData = gameList[i].split(",")
+      for (const game of gameList) {
+        currGame = game.split(",")
         if (presetTour) {
-          await addGame(gameData[0],gameData[1],tName,gameData[2],db)
+          await addGame(currGame[0],currGame[1],tName,currGame[2],db)
         } else {
-          await addGame(gameData[0],gameData[1],gameData[2],gameData[3],db)
+          await addGame(currGame[0],currGame[1],currGame[2],currGame[3],db)
         }
-        i += 1
       }
     } catch(error) {
       await db.execute('ROLLBACK;')
-      console.error("Error occured on: ",gameList[i])
+      console.error("Error occured on: ",currGame)
       console.error(error);
       alert("Games could not be added: Try Again")
       return
