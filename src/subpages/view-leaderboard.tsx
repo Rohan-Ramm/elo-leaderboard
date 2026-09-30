@@ -2,18 +2,11 @@ import { useState,useContext,useEffect } from "react";
 import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
-
-type Player = {
-  id: number;
-  name: string;
-  wins: number;
-  losses: number;
-  elo: number;
-};
+import { Player } from "../lib";
 
 function ViewLeaderboard() {
   const {db, loading} = useContext(DbContext)
-  const [leaderboard,setLeaderboard] = useState<Player>([])
+  const [leaderboard,setLeaderboard] = useState<Player[]>([])
   const [parameters, setParameters] = useState("")
 
 

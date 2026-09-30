@@ -1,5 +1,21 @@
 import Database from "@tauri-apps/plugin-sql";
 
+type Player = {
+    id: number;
+    name: string;
+    wins: number;
+    losses: number;
+    elo: number;
+  };
+
+type Match = {
+    id: number;
+    winner_id: number;
+    loser_id: number;
+    tournament_name: string;
+    date: string;
+};
+
 function calculateNewElo(winnerElo: number, loserElo: number, kFactor = 32) {
     const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
     const expectedLoser = 1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400));
@@ -34,4 +50,5 @@ async function addGame(winner: string, loser: string, tournament: string, date: 
     )`,[winner,loser,tournament,date])
 }
 
-export default addGame
+export default addGame;
+export type {Player};
