@@ -1,21 +1,51 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useContext } from "react";
+import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
-import { invoke } from "@tauri-apps/api/core";
+import Papa from 'papaparse'
 import "../App.css";
+import { Player,Match } from "../lib";
 
 function ExportLeague() {
+  const {db, loading} = useContext(DbContext)
   const [exportFormat,setExportFormat] = useState("JSON")
   const [exportData,setExportData] = useState("Hello World")
 
-  useEffect(() => { 
-    invoke<string>("export_database",{exportFormat: exportFormat}) //export database does not yet exist
-    .then((message) => {
-      setExportData(message);
-    })
+  useEffect(() => {
+    async function setup() {
+      if(!db || loading) {
+        console.log("Database failed to load.")
+        return 
+      }
+      const players = await db.select<Player[]>("Select * FROM players");
+      const matches = await db.select<Match[]>("Select * FROM matches");
+      const jsonData = JSON.stringify({"players": players, "matches": matches},null,1)
+      if (exportFormat == "JSON") {
+        console.log(jsonData)
+        setExportData(jsonData)
+      } else {
+        const playerCSV = Papa.unparse(players, {
+          header:true,
+          skipEmptyLines:true,
+          newline: '\n',
+        })
+        const matchCSV = Papa.unparse(matches, {
+          header: true,
+          skipEmptyLines:true,
+          newline: '\n',
+        })
+        const finalCSV = `players: \n` +
+          playerCSV +
+          `\nmatches: \n` +
+          matchCSV
+        console.log(finalCSV)
+        setExportData(finalCSV)
+      }
+    }
+    setup();
   }, [exportFormat]);
   
   async function copyExportData(): Promise<void> {
-    await navigator.clipboard.writeText(exportFormat);
+    await navigator.clipboard.writeText(exportData);
   }
 
   return (
@@ -27,7 +57,7 @@ function ExportLeague() {
             <button className={exportFormat === "JSON" ? "selected-btn" : ""} onClick={() => setExportFormat('JSON')}>JSON</button>
             <button className={exportFormat === "CSV" ? "selected-btn" : ""} onClick={() => setExportFormat('CSV')}>CSV</button>
         </div>
-        <p className="text-box">{exportData}</p>
+        <pre className="text-box">{exportData}</pre>
         <div className="row"><button onClick={copyExportData}>Copy</button></div>
       </div>
     </main>

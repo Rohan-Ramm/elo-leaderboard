@@ -93,13 +93,18 @@
 }
 
 .text-box {
+  display: flex;
+  justify-content: left;
+  text-align: left;
   background-color: #13898f; /* Lighter teal */
   color: white;
   border: 1.5px solid #d3e2e3; /* Light border */
   border-radius: 12px;
   box-sizing: border-box;
   width: 80%;
-  min-height: 10rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 .text-bubble {

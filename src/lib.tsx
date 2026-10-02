@@ -51,4 +51,4 @@ async function addGame(winner: string, loser: string, tournament: string, date: 
 }
 
 export default addGame;
-export type {Player};
+export type {Player,Match};
