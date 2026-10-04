@@ -33,9 +33,9 @@ function ExportLeague() {
           skipEmptyLines:true,
           newline: '\n',
         })
-        const finalCSV = `players: \n` +
+        const finalCSV = `players\n` +
           playerCSV +
-          `\nmatches: \n` +
+          `\nmatches\n` +
           matchCSV
         console.log(finalCSV)
         setExportData(finalCSV)

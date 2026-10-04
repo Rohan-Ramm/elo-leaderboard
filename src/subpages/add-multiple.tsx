@@ -41,6 +41,9 @@ Each game should be on a different line`
           await addGame(currGame[0],currGame[1],currGame[2],currGame[3],db)
         }
       }
+      await db.execute('COMMIT;')
+      console.log("Successful");
+      pageSwapContext.setPage("main-menu");
     } catch(error) {
       await db.execute('ROLLBACK;')
       console.error("Error occured on: ",currGame)
@@ -48,9 +51,6 @@ Each game should be on a different line`
       alert("Games could not be added: Try Again")
       return
     }
-    await db.execute('COMMIT;')
-    console.log("Successful");
-    pageSwapContext.setPage("main-menu");
   };
   return (
     <main className="container">
