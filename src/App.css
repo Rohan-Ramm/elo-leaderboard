@@ -220,3 +220,23 @@ button:hover {
   width: 75%;
   min-height: 85%;
 }
+
+table {
+  border-spacing: 0px;
+  font-size: 1.1rem;
+}
+
+thead {
+  font-weight: 700;
+  background-color: #13898f;
+}
+
+tbody {
+  background-color: #BAC8D3;
+}
+
+td {
+  border: 0.75px solid black;
+  color:black;
+  padding: 5px 20px;
+}
