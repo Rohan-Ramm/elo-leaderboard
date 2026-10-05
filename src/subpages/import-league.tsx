@@ -73,6 +73,7 @@ function ImportLeague() {
 
     for (const matchD of result["matches"]) {
       const currMatch: Match = matchD
+      console.log(currMatch)
       await db.execute(`INSERT INTO matches (id,winner_id, loser_id, tournament_name, date) VALUES (
         $1,
         $2,
@@ -84,7 +85,8 @@ function ImportLeague() {
     console.log("Match adds successful")
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (!submittable) {
       return
     }
@@ -94,7 +96,6 @@ function ImportLeague() {
       console.log("Database failed to load.")
       return 
     }
-    await db.execute('BEGIN TRANSACTION;')
     try {
       await db.execute('DELETE FROM matches')
       await db.execute('DELETE FROM sqlite_sequence WHERE name="matches"')
@@ -107,13 +108,11 @@ function ImportLeague() {
       } else {
         await importCSV(db);
       }
-      await db.execute('COMMIT;')
       console.log("Success")
       setSubmittable(true)
       pageSwapContext.setPage("main-menu")
     }
     catch(error) {
-      await db.execute('ROLLBACK;')
       console.error("Error:",error)
     }
   };

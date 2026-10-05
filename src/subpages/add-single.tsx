@@ -17,14 +17,11 @@ function AddSingle() {
       return
     }
     
-    await db.execute('BEGIN TRANSACTION;')
     await addGame(winner,loser,tournament,date,db)
     .then(async () => {
-      await db.execute('COMMIT;')
       console.log("Success")
     })
     .catch(async (err) => {
-      await db.execute('ROLLBACK;')
       console.error("Failure:",err)
     })
 

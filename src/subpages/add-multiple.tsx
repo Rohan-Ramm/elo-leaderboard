@@ -31,7 +31,6 @@ Each game should be on a different line`
     const gameList = inputData.split("\n")
     let currGame = null;
 
-    await db.execute('BEGIN TRANSACTION;')
     try {
       for (const game of gameList) {
         currGame = game.split(",")
@@ -41,11 +40,9 @@ Each game should be on a different line`
           await addGame(currGame[0],currGame[1],currGame[2],currGame[3],db)
         }
       }
-      await db.execute('COMMIT;')
       console.log("Successful");
       pageSwapContext.setPage("main-menu");
     } catch(error) {
-      await db.execute('ROLLBACK;')
       console.error("Error occured on: ",currGame)
       console.error(error);
       alert("Games could not be added: Try Again")
