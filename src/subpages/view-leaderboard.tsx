@@ -45,8 +45,8 @@ function ViewLeaderboard() {
           </thead>
           <tbody>
             {
-              leaderboard.map(player => 
-                <tr>
+              leaderboard.map((player,index) => 
+                <tr key={index}>
                   <td>{player.name}</td>
                   <td>{player.wins}</td>
                   <td>{player.losses}</td>

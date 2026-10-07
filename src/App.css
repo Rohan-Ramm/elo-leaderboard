@@ -65,7 +65,7 @@
   align-items: center;
   padding: 3vh;
   min-width: 25rem;
-  min-height: 20rem; 
+  min-height: 20rem;
 }
 
 .field-list {
@@ -229,14 +229,55 @@ table {
 thead {
   font-weight: 700;
   background-color: #13898f;
+  color: white;
 }
 
 tbody {
   background-color: #BAC8D3;
+  color:black;
 }
 
 td {
   border: 0.75px solid black;
-  color:black;
   padding: 5px 20px;
+  overflow-x: auto;
+}
+
+.player-info-box {
+  display: grid;
+  width: 80%;
+  grid-template-rows: repeat(9,minmax(1rem,2rem));
+  grid-template-columns: minmax(10rem,1fr) minmax(10rem,1fr);
+}
+
+.player-info-box > * {
+  display: flex;
+  border: 0.75px solid black;
+  color:black;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-header {
+  font-weight: 700;
+  background-color: #13898f;
+  color: white;
+  grid-row: span 2;
+  grid-column: span 2;
+  font-size: 175%
+}
+
+.big-info-box {
+  background-color: #BAC8D3;
+  flex-direction: column;
+  grid-row: span 2;
+  grid-column:span 1;
+  overflow-y: auto
+}
+
+.small-info-box {
+  background-color: #BAC8D3;
+  grid-row: span 2;
+  grid-column: span 1;
+  font-size: 125%;
 }

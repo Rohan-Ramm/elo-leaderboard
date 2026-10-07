@@ -16,6 +16,13 @@ type Match = {
     date: string;
 };
 
+type PlayerMatch = {
+    outcome: string,
+    opponent: string;
+    tournament_name: string;
+    date: string;
+}
+
 function calculateNewElo(winnerElo: number, loserElo: number, kFactor = 32) {
     const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
     const expectedLoser = 1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400));
@@ -51,4 +58,4 @@ async function addGame(winner: string, loser: string, tournament: string, date: 
 }
 
 export default addGame;
-export type {Player,Match};
+export type {Player,Match,PlayerMatch};

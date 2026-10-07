@@ -20,7 +20,6 @@ function ExportLeague() {
       const matches = await db.select<Match[]>("Select * FROM matches");
       const jsonData = JSON.stringify({"players": players, "matches": matches},null,1)
       if (exportFormat == "JSON") {
-        console.log(jsonData)
         setExportData(jsonData)
       } else {
         const playerCSV = Papa.unparse(players, {
@@ -37,7 +36,6 @@ function ExportLeague() {
           playerCSV +
           `\nmatches\n` +
           matchCSV
-        console.log(finalCSV)
         setExportData(finalCSV)
       }
     }
