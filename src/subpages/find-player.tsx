@@ -68,14 +68,14 @@ function FindPlayer() {
       <div className="central-column">
         <GoToMenu/>
         <h1>Find Player</h1>
-        <div className="row-2">
+        <div className="row">
           <input type="text" value={search} onChange={(e)=>setSearch(e.target.value)} onKeyDown={(e) => {
             if (e.key == "Enter") {
               onClick()
               setSearch("")
             }
           }}/>
-          <button onClick={onClick}></button>
+          <button className="skinny-btn" onClick={onClick}>Search</button>
         </div>
         <br/>
         {targetPlayer && <div className="player-info-box">

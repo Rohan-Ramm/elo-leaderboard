@@ -57,7 +57,9 @@ Each game should be on a different line`
         <div className="row">
           <div className="text-bubble">Tournament</div>
           <input type="text" ref={tourName}/>
-          <button className={presetTour ? "selected-btn" : ""} onClick={() => setPresetTour(!presetTour)}/>
+          <button className="skinny-btn" onClick={() => setPresetTour(!presetTour)}>
+            {presetTour ? "Clear" : "Set"}
+          </button>
         </div>
         <form className="long-answer" onSubmit={handleSubmit}> 
           <pre>{text}</pre>
