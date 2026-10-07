@@ -1,0 +1,18 @@
+#return-to-menu {
+    background-color: #BAC8D3; /* Silver */
+    color: black;
+    border: 1.5px solid black;
+    font-size: 1.25rem; 
+    border-radius: 10px;
+    padding: 0.2rem 0.4rem;
+    position: absolute;
+    top: 0.55rem;
+    left: 1.1rem;
+    max-width: 20%;
+    max-height: 10%;
+    transition: background-color 0.2s ease;
+  }
+  
+  #return-to-menu:hover {
+    background-color: #8D97A0;
+  }

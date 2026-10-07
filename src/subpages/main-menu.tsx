@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { PageSwapContext } from "../App";
 import "../App.css";
+import "./main-menu.css"
 
 function MainMenu() {
 

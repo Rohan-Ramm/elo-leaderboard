@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { PageSwapContext } from "./App";
 import "./App.css";
+import "./go-to-menu.css"
 
 function GoToMenu() {
   const pageSwapContext = useContext(PageSwapContext)

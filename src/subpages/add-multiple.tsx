@@ -55,7 +55,7 @@ Each game should be on a different line`
         <GoToMenu/>
         <h1>Add Games</h1>
         <div className="row">
-          <div className="text-bubble">Tournament</div>
+          <div className={presetTour ? "text-bubble-emphasized" : "text-bubble"}>Tournament</div>
           <input type="text" ref={tourName}/>
           <button className="skinny-btn" onClick={() => setPresetTour(!presetTour)}>
             {presetTour ? "Clear" : "Set"}
