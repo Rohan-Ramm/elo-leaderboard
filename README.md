@@ -5,20 +5,33 @@ This program is a continually updating leaderboard for sports leagues. All the u
 Create a leaderboard for a sports league by adding in match statistics. To update the leaderboard add matches. To check that the leaderboard is correct print the data. The settings allow you to change the way you input data and how the system responds to said data. Once you are done adding matches export the leaderboard to text, csv, or json. Any exported leaderboard can be imported back into the program to be updated.
 ## Example
 
-Let's create a leaderboard for the NFL. We'll start by adding matches. 
+Let's create a leaderboard for NFL teams. We'll start by adding a match. To add a match we need to provide the match's winner, loser, tournament, and its date (in YYYY-MM-DD).
 
-![](images/demo_1.png)
-![](images/demo_2.png)
 
-Once we've added some matches we can check whether our data is correct by printing a console output.
+<img src="images/add-game-demo.png" height=350px></img>
 
-![](images/demo_3.png)![](images/demo_4.png) 
 
-If we're satisfied then we can export it to a file. 
+Matches can be added all at once in addition to one at a time.
 
-![](images/demo_5.png)
-![](images/demo_6.png)
 
-Now, the next time we start the program we can load in the old database. 
+<img src="images/add-game-multiple-1.png" height=350px></img>
 
-![](images/demo_7.png)
+
+When adding multiple matches at a time you can pre-set a common tournament.
+
+<img src="images/add-game-multiple-2.png" height=350px></img>
+
+After we've added a couple matches we can view the player leaderboard to see who's on top.
+
+<img src="images/view-leaderboard-demo.png" height=350px></img>
+
+We can also look up individual players or teams through the find player tab.
+
+
+<img src="images/find-player-demo.png" height=350px></img>
+
+Data can be shared through both CSV and JSON exports. Any instance of the leaderboard app can receive an input from another input. Additionally, csv data can be displayed for general viewing in google sheets. 
+
+
+<img src="images/export-league-demo.png" height=400px></img>
+<img src="images/csv-display-demo.png" height=400px></img>
