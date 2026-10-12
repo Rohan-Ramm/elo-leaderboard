@@ -28,7 +28,7 @@
     flex-direction: column;
     grid-row: span 2;
     grid-column:span 1;
-    overflow-y: auto
+    font-size: 80%;
   }
   
   .small-info-box {

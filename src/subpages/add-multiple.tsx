@@ -12,7 +12,7 @@ function AddMultiple() {
   const {db, loading} = useContext(DbContext)
 
   let text = `Post game information in the following format:
-{Winner},{Loser}, {Date}, {Tournament}
+{Winner},{Loser},{Date},{Tournament}
 Each game should be on a different line`
 
   if (!pageSwapContext) {
@@ -35,6 +35,7 @@ Each game should be on a different line`
       for (const game of gameList) {
         currGame = game.split(",")
         if (presetTour) {
+          console.log(currGame)
           await addGame(currGame[0],currGame[1],tName,currGame[2],db)
         } else {
           await addGame(currGame[0],currGame[1],currGame[2],currGame[3],db)
