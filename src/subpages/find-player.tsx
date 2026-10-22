@@ -1,6 +1,5 @@
 import { useState,useContext } from "react";
 import { Player, Match, PlayerMatch } from "../lib";
-import { invoke } from "@tauri-apps/api/core";
 import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
@@ -12,10 +11,6 @@ function FindPlayer() {
   const [search,setSearch] = useState("")
   const [targetPlayer,setTargetPlayer] = useState<Player>()
   const [matchList,setMatchList] = useState<PlayerMatch[]>([])
-
-  function getMatchData(match: PlayerMatch) {
-    return `${match.tournament_name} ${match.outcome} vs ${match.opponent}\n${match.date}`
-  }
 
   if(!db || loading) {
     console.log("Database failed to load.")

@@ -3,7 +3,6 @@ import Papa from 'papaparse'
 import { Player,Match } from "../lib";
 import { DbContext } from "../App";
 import Database from "@tauri-apps/plugin-sql";
-import { invoke } from "@tauri-apps/api/core";
 import { PageSwapContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";

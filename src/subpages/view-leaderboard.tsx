@@ -8,7 +8,7 @@ import { Player } from "../lib";
 function ViewLeaderboard() {
   const {db, loading} = useContext(DbContext)
   const [leaderboard,setLeaderboard] = useState<Player[]>([])
-  const [parameters, setParameters] = useState("")
+//const [parameters, setParameters] = useState("") This will eventually hold all filter
 
   const headers = [
     {position: 0, title: "Name"},
@@ -28,7 +28,7 @@ function ViewLeaderboard() {
       setLeaderboard(prevLeaderboard)
     }
     setup();
-  }, [parameters]);
+  }, []);
 
   return (
     <main className="container">
