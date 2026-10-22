@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 
-type Player = {
+type PlayerDisplay = {
     id: number;
     name: string;
     wins: number;
@@ -8,15 +8,7 @@ type Player = {
     elo: number;
   };
 
-type Match = {
-    id: number;
-    winner_id: number;
-    loser_id: number;
-    tournament_name: string;
-    date: string;
-};
-
-type PlayerMatch = {
+type MatchDisplay = {
     outcome: string,
     opponent: string;
     tournament_name: string;
@@ -58,4 +50,4 @@ async function addGame(winner: string, loser: string, tournament: string, date: 
 }
 
 export default addGame;
-export type {Player,Match,PlayerMatch};
+export type {PlayerDisplay as Player,Match,MatchDisplay as PlayerMatch};

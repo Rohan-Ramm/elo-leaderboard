@@ -6,6 +6,27 @@ use sqlx::{
 use std::{fs, str::FromStr};
 use tauri::Manager;
 
+#[derive(FromRow,Serialize)]
+struct Player {
+    id: i64,
+    name: String,
+    wins: i64,
+    losses: i64,
+    elo: f64,
+}
+
+#[derive(FromRow, Serialize)]
+pub struct Match {
+    pub id: i64,
+    pub winner_id: i64,
+    pub loser_id: i64,
+    pub tournament_name: String,
+    pub date: String,
+
+    #[sqlx(skip)]
+    pub display_text: String
+}
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 #[tauri::command]
