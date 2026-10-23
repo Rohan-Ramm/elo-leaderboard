@@ -50,8 +50,16 @@ fn import_database(input_format: String,input_data: String) -> Result<String,Str
 }
 
 #[tauri::command]
-fn find_player(player_name: String) -> Result<String,String> {
-    Ok("Good".to_string())
+async fn find_player(pool: State<'_, SqlitePool>,name: String,) -> Result<Option<Player>, String> {
+    sqlx::query_as::<_, Player>(
+        "SELECT id, name, wins, losses, elo
+         FROM players
+         WHERE name = ?"
+    )
+    .bind(name)
+    .fetch_optional(pool.inner())
+    .await
+    .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

@@ -1,5 +1,6 @@
 import { useState,useContext } from "react";
-import { Player, Match, PlayerMatch } from "../lib";
+import { Player, PlayerMatch } from "../lib";
+import { invoke } from "@tauri-apps/api/core";
 import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
@@ -22,15 +23,14 @@ function FindPlayer() {
       return 
     }
     try {
-      const result = await db.select<Player[]>(
-        "SELECT * FROM players WHERE name = $1;",[search]
-      );
-      if(result.length == 0) {
+      const result = await invoke("find_player", {name: search});
+      if(result == null) {
         console.log("Player not found")
         return 
       }
-      setTargetPlayer(result[0])
-
+      //setTargetPlayer(JSON.parse(result) as targetPlayer)
+      console.log(result)
+      /**
       const match_data = await db.select<Match[]>(`
         SELECT * FROM matches 
         WHERE winner_id = $1 OR loser_id = $1 
@@ -53,6 +53,7 @@ function FindPlayer() {
       console.log(match_data)
       console.log(personalized_match_data)
       setMatchList(personalized_match_data)
+       */
       console.log("Succeeded")
     } catch(err) {
       console.error("Failure",err)
