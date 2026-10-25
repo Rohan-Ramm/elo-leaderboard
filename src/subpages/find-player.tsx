@@ -7,28 +7,20 @@ import "../App.css";
 import "./find-player.css"
 
 function FindPlayer() {
-  const {db, loading} = useContext(DbContext)
 
   const [search,setSearch] = useState("")
   const [targetPlayer,setTargetPlayer] = useState<Player>()
   const [matchList,setMatchList] = useState<PlayerMatch[]>([])
 
-  if(!db || loading) {
-    console.log("Database failed to load.")
-  }
-
   const onClick = async () => {
-    if(!db || loading) {
-      console.log("Database failed to load.")
-      return 
-    }
+
     try {
       const result = await invoke("find_player", {name: search});
       if(result == null) {
         console.log("Player not found")
         return 
       }
-      //setTargetPlayer(JSON.parse(result) as targetPlayer)
+      setTargetPlayer(result as Player)
       console.log(result)
       /**
       const match_data = await db.select<Match[]>(`

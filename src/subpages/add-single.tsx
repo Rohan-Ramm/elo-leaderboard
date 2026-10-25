@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
-import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
-import addGame from "../lib";
+import { invoke } from "@tauri-apps/api/core";
 import "../App.css";
 
 function AddSingle() {
@@ -9,17 +8,16 @@ function AddSingle() {
   const [loser,setLoser] = useState("")
   const [tournament,setTournament] = useState("")
   const [date,setDate] = useState("")
-  const {db, loading} = useContext(DbContext)
 
   const onClick = async () => {
-    if (winner == "" || loser == "" || tournament == "" || date == "" || loading || !db) {
+    if (winner == "" || loser == "" || tournament == "" || date == "") {
       console.error("Failure")
       return
     }
-    
-    await addGame(winner,loser,tournament,date,db)
-    .then(async () => {
-      console.log("Success")
+    const jsonString = JSON.stringify([{"winner_name": winner,"loser_name": loser,"tournament_name": tournament,date: date}])
+    await invoke("add_games", {"inputData": jsonString})
+    .then(async (message) => {
+      console.log(message)
     })
     .catch(async (err) => {
       console.error("Failure:",err)

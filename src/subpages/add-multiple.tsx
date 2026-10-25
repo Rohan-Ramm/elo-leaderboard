@@ -1,7 +1,7 @@
 import { useState,useContext,useRef } from "react";
 import GoToMenu from "../go-to-menu";
 import { PageSwapContext, DbContext } from "../App";
-import addGame from "../lib";
+import { invoke } from "@tauri-apps/api/core";
 import "../App.css";
 
 function AddMultiple() {
@@ -29,26 +29,32 @@ Each game should be on a different line`
 
     const tName = tourName.current?.value ?? "";
     const gameList = inputData.split("\n")
-    let currGame = null;
+    let currGame;
+    let gameObjects;
+    
+    gameObjects = gameList.map((game) => {
+      currGame = game.split(",")
+      if (presetTour) {
+        console.log(currGame)
+        return {"winner": currGame[0], "loser": currGame[1],"tournament": tName, "date": currGame[2]} 
+      } else {
+        return  {"winner": currGame[0], "loser": currGame[1],"tournament": currGame[2], "date": currGame[3]}
+      }
+    })
+    console.log(gameObjects)
+    const jsonString = JSON.stringify(gameObjects)
 
     try {
-      for (const game of gameList) {
-        currGame = game.split(",")
-        if (presetTour) {
-          console.log(currGame)
-          await addGame(currGame[0],currGame[1],tName,currGame[2],db)
-        } else {
-          await addGame(currGame[0],currGame[1],currGame[2],currGame[3],db)
-        }
-      }
-      console.log("Successful");
-      pageSwapContext.setPage("main-menu");
+      await invoke("addGames", {input_data: jsonString})
     } catch(error) {
       console.error("Error occured on: ",currGame)
       console.error(error);
       alert("Games could not be added: Try Again")
       return
     }
+
+    console.log("Successful");
+    pageSwapContext.setPage("main-menu");
   };
   return (
     <main className="container">

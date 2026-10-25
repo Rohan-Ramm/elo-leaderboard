@@ -2,9 +2,17 @@ use std::string;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqlitePoolOptions},
     SqlitePool,
+    FromRow
+};
+use serde::{
+    Serialize,
+    Deserialize
 };
 use std::{fs, str::FromStr};
-use tauri::Manager;
+use tauri::{
+    Manager,
+    State
+};
 
 #[derive(FromRow,Serialize)]
 struct Player {
@@ -16,7 +24,7 @@ struct Player {
 }
 
 #[derive(FromRow, Serialize)]
-pub struct Match {
+pub struct OutgoingMatch {
     pub id: i64,
     pub winner_id: i64,
     pub loser_id: i64,
@@ -27,15 +35,82 @@ pub struct Match {
     pub display_text: String
 }
 
+#[derive(Serialize,Deserialize)] 
+pub struct IncomingMatch {
+    pub winner_name: String,
+    pub loser_name: String,
+    pub tournament_name: String,
+    pub date: String
+}
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 #[tauri::command]
-fn add_mult_games(input_data: String, preset_tour: bool, tour_name: String) -> Result<String,String> {
-    Ok("Good".to_string())
+async fn add_games(pool: State<'_, SqlitePool>, input_data: String) -> Result<String,String> {
+    let mut tx = pool.begin().await.map_err(|e| e.to_string())?;
+
+    let incoming_games: Vec<IncomingMatch> = serde_json::from_str(&input_data).map_err(|e| e.to_string())?;
+    for game in &incoming_games {
+        add_game_to_database(&mut tx, game).await?;
+    }
+    tx.commit().await.map_err(|e| e.to_string())?;
+    Ok("Success".to_string())
 }
 
-#[tauri::command]
-fn add_game(winner: String, loser: String, tournament: String, date: String) -> Result<String,String> {
+async fn add_game_to_database(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, game: &IncomingMatch) -> Result<String,String> {
+    if game.winner_name == game.loser_name {
+        return Err("A player cannot play against themselves".into());
+    }
+    // insert or ignore player one
+    sqlx::query("INSERT OR IGNORE INTO players (name) VALUES (?)")
+        .bind(&game.winner_name)
+        .execute(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
+    // insert or ignore player two
+    sqlx::query("INSERT OR IGNORE INTO players (name) VALUES (?)")
+        .bind(&game.loser_name)
+        .execute(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
+    // get elo from players 1 and 2
+    let current_winner_elo = sqlx::query_scalar("SELECT elo FROM players WHERE name = ?;")
+        .bind(&game.winner_name)
+        .fetch_one(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
+    let current_loser_elo = sqlx::query_scalar("SELECT elo FROM players WHERE name = ?;")
+        .bind(&game.loser_name)
+        .fetch_one(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
+    // calculate new elos
+    let (new_winner_elo, new_loser_elo) = calculate_new_elo(current_winner_elo, current_loser_elo,32.0);
+    // update scores
+    sqlx::query("UPDATE players SET wins = wins + 1, elo = ? WHERE NAME = ?;")
+        .bind(new_winner_elo)
+        .bind(&game.winner_name)
+        .execute(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
+    sqlx::query("UPDATE players SET losses = losses + 1, elo = ? WHERE NAME = ?;")
+        .bind(new_loser_elo)
+        .bind(&game.loser_name)
+        .execute(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
+    // insert game into matches
+    sqlx::query("INSERT INTO matches (winner_id, loser_id, tournament_name, date) VALUES (
+        (SELECT id FROM players WHERE name = ?),
+        (SELECT id FROM PLAYERS WHERE name = ?),
+        (?),
+        (?))")
+        .bind(&game.winner_name)
+        .bind(&game.loser_name)
+        .bind(&game.tournament_name)
+        .bind(&game.date)
+        .execute(&mut **tx)
+        .await
+        .map_err(|e| e.to_string())?;
     Ok("Good".to_string())
 }
 
@@ -67,8 +142,15 @@ fn get_leaderboard(preferences: String) -> Result<String,String> {
     Ok("Good".to_string())
 }
 
-fn calculateNewElo(winner_elo: u16, loser_elo: u16, k_factor: u8) -> (u16,u16) {
-    return (5,5)
+fn calculate_new_elo(winner_elo: f64, loser_elo: f64, k_factor: f64) -> (f64, f64) {
+
+    let expected_winner = 1.0 / (1.0 + 10.0_f64.powf((loser_elo - winner_elo) / 400.0));
+    let expected_loser = 1.0 / (1.0 + 10.0_f64.powf((winner_elo - loser_elo) / 400.0));
+  
+    let new_winner_elo = (winner_elo + k_factor * (1.0 - expected_winner)).round();
+    let new_loser_elo = (loser_elo + k_factor * (0.0 - expected_loser)).round();
+  
+    (new_winner_elo, new_loser_elo)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -129,8 +211,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            add_game,
-            add_mult_games,
+            add_games,
             export_database,
             import_database,
             find_player,
