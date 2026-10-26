@@ -1,12 +1,10 @@
-import { useState,useEffect,useContext } from "react";
-import { DbContext } from "../App";
+import { useState,useEffect} from "react";
 import GoToMenu from "../go-to-menu";
 import Papa from 'papaparse'
 import "../App.css";
 import { Player,Match } from "../lib";
 
 function ExportLeague() {
-  const {db, loading} = useContext(DbContext)
   const [exportFormat,setExportFormat] = useState("JSON")
   const [exportData,setExportData] = useState("Hello World")
 
