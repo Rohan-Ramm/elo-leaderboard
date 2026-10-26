@@ -1,6 +1,6 @@
 import { useState,useContext,useRef } from "react";
 import GoToMenu from "../go-to-menu";
-import { PageSwapContext, DbContext } from "../App";
+import { PageSwapContext} from "../App";
 import { invoke } from "@tauri-apps/api/core";
 import "../App.css";
 
@@ -9,7 +9,6 @@ function AddMultiple() {
   const tourName = useRef<HTMLInputElement>(null)
   const [presetTour,setPresetTour] = useState(false)
   const pageSwapContext = useContext(PageSwapContext)
-  const {db, loading} = useContext(DbContext)
 
   let text = `Post game information in the following format:
 {Winner},{Loser},{Date},{Tournament}
@@ -20,10 +19,6 @@ Each game should be on a different line`
   }
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    if (!db || loading) {
-      console.error("Database could not be accessed")
-      return
-    }
 
     event.preventDefault()
 
@@ -36,16 +31,16 @@ Each game should be on a different line`
       currGame = game.split(",")
       if (presetTour) {
         console.log(currGame)
-        return {"winner": currGame[0], "loser": currGame[1],"tournament": tName, "date": currGame[2]} 
+        return {"winner_name": currGame[0], "loser_name": currGame[1],"tournament_name": tName, "date": currGame[2]} 
       } else {
-        return  {"winner": currGame[0], "loser": currGame[1],"tournament": currGame[2], "date": currGame[3]}
+        return  {"winner_name": currGame[0], "loser_name": currGame[1],"tournament_name": currGame[2], "date": currGame[3]}
       }
     })
     console.log(gameObjects)
     const jsonString = JSON.stringify(gameObjects)
 
     try {
-      await invoke("addGames", {input_data: jsonString})
+      await invoke("add_games", {"inputData": jsonString})
     } catch(error) {
       console.error("Error occured on: ",currGame)
       console.error(error);

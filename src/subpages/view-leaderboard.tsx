@@ -1,5 +1,4 @@
 import { useState,useContext,useEffect } from "react";
-import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
 import "./view-leaderboard.css"

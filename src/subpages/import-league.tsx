@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import Papa from 'papaparse'
 import { Player,Match } from "../lib";
-import { DbContext } from "../App";
 import Database from "@tauri-apps/plugin-sql";
 import { PageSwapContext } from "../App";
 import GoToMenu from "../go-to-menu";
@@ -12,7 +11,6 @@ function ImportLeague() {
   const [inputData,setInputData] = useState("")
   const [submittable,setSubmittable] = useState(true)
   const pageSwapContext = useContext(PageSwapContext)
-  const {db, loading} = useContext(DbContext)
 
   if (!pageSwapContext) {
     throw new Error("ImportLeague must be used inside PageSwapContext.Provider");
