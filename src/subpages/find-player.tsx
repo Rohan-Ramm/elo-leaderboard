@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Player, PlayerMatch } from "../lib";
+import { Player, Match } from "../lib";
 import { invoke } from "@tauri-apps/api/core";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
@@ -9,18 +9,18 @@ function FindPlayer() {
 
   const [search,setSearch] = useState("")
   const [targetPlayer,setTargetPlayer] = useState<Player>()
-  const [matchList,setMatchList] = useState<PlayerMatch[]>([])
+  const [matchList,setMatchList] = useState<Match[]>([])
 
   const onClick = async () => {
 
     try {
-      const result = await invoke("find_player", {name: search});
-      if(result == null) {
+      const result_player = await invoke("find_player", {name: search});
+      if(result_player == null) {
         console.log("Player not found")
         return 
       }
-      setTargetPlayer(result as Player)
-      console.log(result)
+      setTargetPlayer(result_player as Player)
+      console.log(result_player)
       /**
       const match_data = await db.select<Match[]>(`
         SELECT * FROM matches 
@@ -75,7 +75,7 @@ function FindPlayer() {
               matchList.map((match,index) => 
                 <div className="big-info-box" key = {index}>
                   <div>{match.tournament_name}</div>
-                  <div><b>{match.outcome}</b> vs {match.opponent}</div>
+                  <div><b>{match.winner_name}</b> defeated {match.loser_name}</div>
                   <div>{match.date}</div>
                 </div>
             )}

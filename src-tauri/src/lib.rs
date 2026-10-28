@@ -24,7 +24,7 @@ struct Player {
 }
 
 #[derive(FromRow, Serialize)]
-pub struct OutgoingMatch {
+pub struct BackendMatch {
     pub id: i64,
     pub winner_id: i64,
     pub loser_id: i64,
@@ -32,11 +32,13 @@ pub struct OutgoingMatch {
     pub date: String,
 
     #[sqlx(skip)]
-    pub display_text: String
+    pub winner_name: String,
+    #[sqlx(skip)]
+    pub loser_name: String
 }
 
 #[derive(Serialize,Deserialize)] 
-pub struct IncomingMatch {
+pub struct FrontendMatch {
     pub winner_name: String,
     pub loser_name: String,
     pub tournament_name: String,
@@ -48,7 +50,7 @@ pub struct IncomingMatch {
 async fn add_games(pool: State<'_, SqlitePool>, input_data: String) -> Result<String,String> {
     let mut tx = pool.begin().await.map_err(|e| e.to_string())?;
 
-    let incoming_games: Vec<IncomingMatch> = serde_json::from_str(&input_data).map_err(|e| e.to_string())?;
+    let incoming_games: Vec<FrontendMatch> = serde_json::from_str(&input_data).map_err(|e| e.to_string())?;
     for game in &incoming_games {
         add_game_to_database(&mut tx, game).await?;
     }
@@ -56,7 +58,7 @@ async fn add_games(pool: State<'_, SqlitePool>, input_data: String) -> Result<St
     Ok("Success".to_string())
 }
 
-async fn add_game_to_database(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, game: &IncomingMatch) -> Result<String,String> {
+async fn add_game_to_database(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, game: &FrontendMatch) -> Result<String,String> {
     if game.winner_name == game.loser_name {
         return Err("A player cannot play against themselves".into());
     }

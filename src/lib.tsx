@@ -9,10 +9,10 @@ type PlayerDisplay = {
   };
 
 type MatchDisplay = {
-    outcome: string,
-    opponent: string;
+    winner_name: string,
+    loser_name: string;
     tournament_name: string;
     date: string;
 }
 
-export type {PlayerDisplay as Player,MatchDisplay as PlayerMatch};
+export type {PlayerDisplay as Player,MatchDisplay as Match};
