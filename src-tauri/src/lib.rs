@@ -37,7 +37,7 @@ pub struct BackendMatch {
     pub loser_name: String
 }
 
-#[derive(Serialize,Deserialize)] 
+#[derive(Serialize,Deserialize,FromRow)] 
 pub struct FrontendMatch {
     pub winner_name: String,
     pub loser_name: String,
@@ -140,6 +140,28 @@ async fn find_player(pool: State<'_, SqlitePool>,name: String,) -> Result<Option
 }
 
 #[tauri::command]
+async fn find_assc_matches(pool: State<'_, SqlitePool>,name: String,) -> Result<Vec<FrontendMatch>, String> {
+    sqlx::query_as::<_, FrontendMatch>(
+        "SELECT 
+            winner.name AS winner_name,
+            loser.name AS loser_name,
+            matches.tournament_name AS tournament_name,
+            matches.date AS date
+         FROM players AS winner
+         INNER JOIN matches ON (winner.id = matches.winner_id)
+         INNER JOIN players AS loser ON (loser.id = matches.loser_id)
+         WHERE winner.name = ? OR loser.name = ?
+         ORDER BY matches.date DESC
+         LIMIT 4"
+    )
+    .bind(&name)
+    .bind(&name)
+    .fetch_all(pool.inner())
+    .await
+    .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn get_leaderboard(preferences: String) -> Result<String,String> {
     Ok("Good".to_string())
 }
@@ -217,7 +239,8 @@ pub fn run() {
             export_database,
             import_database,
             find_player,
-            get_leaderboard
+            get_leaderboard,
+            find_assc_matches
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -20,31 +20,16 @@ function FindPlayer() {
         return 
       }
       setTargetPlayer(result_player as Player)
-      console.log(result_player)
-      /**
-      const match_data = await db.select<Match[]>(`
-        SELECT * FROM matches 
-        WHERE winner_id = $1 OR loser_id = $1 
-        ORDER BY date DESC 
-        LIMIT 4`,[result[0].id]);
+      //console.log(result_player)
 
-      const personalized_match_data:PlayerMatch[]  = []
-      let opponent;
-      let outcome;
-      for (const match of match_data) {
-        if (match.winner_id == result[0].id) {
-          outcome = "Won"
-          opponent = await db.select<Player[]>("SELECT name from players where id = $1",[match.loser_id])
-        } else {
-          outcome = "Lost"
-          opponent = await db.select<Player[]>("SELECT name from players where id = $1",[match.loser_id])
-        }
-        personalized_match_data.push({"outcome": outcome, "opponent": opponent[0].name, "tournament_name":match.tournament_name, "date":match.date})
+      const result_matches = await invoke("find_assc_matches", {name: search});
+      if(result_matches == null) {
+        console.log("Player not found")
+        return 
       }
-      console.log(match_data)
-      console.log(personalized_match_data)
-      setMatchList(personalized_match_data)
-       */
+      setMatchList(result_matches as Match[])
+      //console.log(result_matches)
+
       console.log("Succeeded")
     } catch(err) {
       console.error("Failure",err)
