@@ -1,4 +1,5 @@
 use std::string;
+use std::collections::HashMap;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqlitePoolOptions},
     SqlitePool,
@@ -162,8 +163,22 @@ async fn find_assc_matches(pool: State<'_, SqlitePool>,name: String,) -> Result<
 }
 
 #[tauri::command]
-fn get_leaderboard(preferences: String) -> Result<String,String> {
-    Ok("Good".to_string())
+async fn get_leaderboard(pool: State<'_, SqlitePool>, preferences: String) -> Result<Vec<Player>,String> {
+    let settings: HashMap<String,String> = serde_json::from_str(&preferences).map_err(|e| e.to_string())?;
+    //whitelist allowed names
+    let query = match settings["category"].as_str() {
+        "elo" => "SELECT * FROM players ORDER BY elo DESC LIMIT ?",
+        "wins" => "SELECT * FROM players ORDER BY wins DESC LIMIT ?",
+        "losses" => "SELECT * FROM players ORDER BY losses DESC LIMIT ?",
+        "name" => "SELECT * FROM players ORDER BY name DESC LIMIT ?",
+        _ => return Err("Invalid sort category".to_string()),
+    };
+    
+    sqlx::query_as::<_, Player>(query)
+    .bind(&settings["count"])
+    .fetch_all(pool.inner())
+    .await
+    .map_err(|e| e.to_string())
 }
 
 fn calculate_new_elo(winner_elo: f64, loser_elo: f64, k_factor: f64) -> (f64, f64) {

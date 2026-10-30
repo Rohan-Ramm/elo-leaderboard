@@ -1,13 +1,13 @@
-import { useState,useContext,useEffect } from "react";
+import { useState,useEffect } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
 import "./view-leaderboard.css"
 import { Player } from "../lib";
 
 function ViewLeaderboard() {
-  const {db, loading} = useContext(DbContext)
   const [leaderboard,setLeaderboard] = useState<Player[]>([])
-//const [parameters, setParameters] = useState("") This will eventually hold all filter
+  const [filters, setFilters] = useState({"category": "elo", "count": "10"}) // A way to edit parameters is forthcoming
 
   const headers = [
     {position: 0, title: "Name"},
@@ -18,16 +18,12 @@ function ViewLeaderboard() {
 
   useEffect(() => {
     async function setup() {
-      if(!db || loading) {
-        console.log("Database failed to load.")
-        return 
-      }
-      const prevLeaderboard = await db.select<Player[]>("SELECT * FROM players ORDER BY elo DESC LIMIT 10");
+      const prevLeaderboard = await invoke("get_leaderboard",{"preferences": JSON.stringify(filters)})
       console.log(prevLeaderboard)
-      setLeaderboard(prevLeaderboard)
+      setLeaderboard(prevLeaderboard as Player[])
     }
     setup();
-  }, []);
+  }, [filters]);
 
   return (
     <main className="container">
