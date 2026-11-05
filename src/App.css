@@ -129,7 +129,7 @@ button {
   border: 1.5px solid #d3e2e3;
   border-radius: 12px;
   padding: 0.6rem 0.4rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   cursor: pointer;
   
   display: flex; 
@@ -142,6 +142,7 @@ button {
   transition: background-color 0.2s ease;
 
   aspect-ratio: 5 / 2;
+  height: 4rem;
 }
 
 .skinny-btn {

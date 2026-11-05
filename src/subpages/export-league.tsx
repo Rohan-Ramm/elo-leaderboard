@@ -1,57 +1,37 @@
-import { useState,useEffect} from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { save } from '@tauri-apps/plugin-dialog';
 import GoToMenu from "../go-to-menu";
-import Papa from 'papaparse'
 import "../App.css";
-import { Player,Match } from "../lib";
-
 function ExportLeague() {
-  const [exportFormat,setExportFormat] = useState("JSON")
-  const [exportData,setExportData] = useState("Hello World")
+  async function copyExportData(type: String): Promise<void> {
+    const path = await save({
+      title: 'Export Database',
+      defaultPath: 'my-database.json',
+      filters: [
+        {
+          name: type.valueOf().toUpperCase(),
+          extensions: [type.valueOf()],
+        },
+      ],
+    });
+    console.log(path);
 
-  useEffect(() => {
-    async function setup() {
-      if(!db || loading) {
-        console.log("Database failed to load.")
-        return 
-      }
-      const players = await db.select<Player[]>("Select * FROM players");
-      const matches = await db.select<Match[]>("Select * FROM matches");
-      const jsonData = JSON.stringify({"players": players, "matches": matches},null,1)
-      if (exportFormat == "JSON") {
-        setExportData(jsonData)
-      } else {
-        const playerCSV = Papa.unparse(players, {
-          header:true,
-          skipEmptyLines:true,
-          newline: '\n',
-        })
-        const matchCSV = Papa.unparse(matches, {
-          header: true,
-          skipEmptyLines:true,
-          newline: '\n',
-        })
-        const finalCSV = `players\n` +
-          playerCSV +
-          `\nmatches\n` +
-          matchCSV
-        setExportData(finalCSV)
-      }
-    }
-    setup();
-  }, [exportFormat]);
-  
-  async function copyExportData(): Promise<void> {
-    await navigator.clipboard.writeText(exportData);
+    await invoke("export_database", {"fileName": path, "fileType": type})
+    .then(async (message) => {
+      console.log(message)
+    })
+    .catch(async (err) => {
+      console.error("Failure:",err)
+    })
   }
 
   return (
     <main className="container">
       <div className="central-column">
         <GoToMenu/>
-        <h1>Export League</h1>
           <div className="center-point">
-            <button onClick={copyExportData}>Export to JSON</button>
-            <button onClick={copyExportData}>Export to CSV</button>
+            <button onClick={() => copyExportData("json")}>Export to JSON</button>
+            <button onClick={() => copyExportData("csv")}>Export to CSV</button>
           </div>
       </div>
     </main>

@@ -118,7 +118,7 @@ async fn add_game_to_database(
 }
 
 #[tauri::command]
-fn export_database(export_format: String) -> Result<String, String> {
+fn export_database(file_name: String, file_type: String) -> Result<String, String> {
     Ok("Good".to_string())
 }
 
