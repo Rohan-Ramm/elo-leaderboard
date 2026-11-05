@@ -1,21 +1,14 @@
-use std::string;
-use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqlitePoolOptions},
-    SqlitePool,
-    FromRow
+    FromRow, SqlitePool,
 };
-use serde::{
-    Serialize,
-    Deserialize
-};
+use std::collections::HashMap;
+use std::string;
 use std::{fs, str::FromStr};
-use tauri::{
-    Manager,
-    State
-};
+use tauri::{Manager, State};
 
-#[derive(FromRow,Serialize)]
+#[derive(FromRow, Serialize)]
 struct Player {
     id: i64,
     name: String,
@@ -35,23 +28,24 @@ pub struct BackendMatch {
     #[sqlx(skip)]
     pub winner_name: String,
     #[sqlx(skip)]
-    pub loser_name: String
+    pub loser_name: String,
 }
 
-#[derive(Serialize,Deserialize,FromRow)] 
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct FrontendMatch {
     pub winner_name: String,
     pub loser_name: String,
     pub tournament_name: String,
-    pub date: String
+    pub date: String,
 }
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 #[tauri::command]
-async fn add_games(pool: State<'_, SqlitePool>, input_data: String) -> Result<String,String> {
+async fn add_games(pool: State<'_, SqlitePool>, input_data: String) -> Result<String, String> {
     let mut tx = pool.begin().await.map_err(|e| e.to_string())?;
 
-    let incoming_games: Vec<FrontendMatch> = serde_json::from_str(&input_data).map_err(|e| e.to_string())?;
+    let incoming_games: Vec<FrontendMatch> =
+        serde_json::from_str(&input_data).map_err(|e| e.to_string())?;
     for game in &incoming_games {
         add_game_to_database(&mut tx, game).await?;
     }
@@ -59,7 +53,10 @@ async fn add_games(pool: State<'_, SqlitePool>, input_data: String) -> Result<St
     Ok("Success".to_string())
 }
 
-async fn add_game_to_database(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, game: &FrontendMatch) -> Result<String,String> {
+async fn add_game_to_database(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    game: &FrontendMatch,
+) -> Result<String, String> {
     if game.winner_name == game.loser_name {
         return Err("A player cannot play against themselves".into());
     }
@@ -87,7 +84,8 @@ async fn add_game_to_database(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, game
         .await
         .map_err(|e| e.to_string())?;
     // calculate new elos
-    let (new_winner_elo, new_loser_elo) = calculate_new_elo(current_winner_elo, current_loser_elo,32.0);
+    let (new_winner_elo, new_loser_elo) =
+        calculate_new_elo(current_winner_elo, current_loser_elo, 32.0);
     // update scores
     sqlx::query("UPDATE players SET wins = wins + 1, elo = ? WHERE NAME = ?;")
         .bind(new_winner_elo)
@@ -102,37 +100,39 @@ async fn add_game_to_database(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, game
         .await
         .map_err(|e| e.to_string())?;
     // insert game into matches
-    sqlx::query("INSERT INTO matches (winner_id, loser_id, tournament_name, date) VALUES (
+    sqlx::query(
+        "INSERT INTO matches (winner_id, loser_id, tournament_name, date) VALUES (
         (SELECT id FROM players WHERE name = ?),
         (SELECT id FROM PLAYERS WHERE name = ?),
         (?),
-        (?))")
-        .bind(&game.winner_name)
-        .bind(&game.loser_name)
-        .bind(&game.tournament_name)
-        .bind(&game.date)
-        .execute(&mut **tx)
-        .await
-        .map_err(|e| e.to_string())?;
+        (?))",
+    )
+    .bind(&game.winner_name)
+    .bind(&game.loser_name)
+    .bind(&game.tournament_name)
+    .bind(&game.date)
+    .execute(&mut **tx)
+    .await
+    .map_err(|e| e.to_string())?;
     Ok("Good".to_string())
 }
 
 #[tauri::command]
-fn export_database(export_format: String) -> Result<String,String> {
+fn export_database(export_format: String) -> Result<String, String> {
     Ok("Good".to_string())
 }
 
 #[tauri::command]
-fn import_database(input_format: String,input_data: String) -> Result<String,String> {
+fn import_database(file_name: String, file_type: String) -> Result<String, String> {
     Ok("Good".to_string())
 }
 
 #[tauri::command]
-async fn find_player(pool: State<'_, SqlitePool>,name: String,) -> Result<Option<Player>, String> {
+async fn find_player(pool: State<'_, SqlitePool>, name: String) -> Result<Option<Player>, String> {
     sqlx::query_as::<_, Player>(
         "SELECT id, name, wins, losses, elo
          FROM players
-         WHERE name = ?"
+         WHERE name = ?",
     )
     .bind(name)
     .fetch_optional(pool.inner())
@@ -141,7 +141,10 @@ async fn find_player(pool: State<'_, SqlitePool>,name: String,) -> Result<Option
 }
 
 #[tauri::command]
-async fn find_assc_matches(pool: State<'_, SqlitePool>,name: String,) -> Result<Vec<FrontendMatch>, String> {
+async fn find_assc_matches(
+    pool: State<'_, SqlitePool>,
+    name: String,
+) -> Result<Vec<FrontendMatch>, String> {
     sqlx::query_as::<_, FrontendMatch>(
         "SELECT 
             winner.name AS winner_name,
@@ -153,7 +156,7 @@ async fn find_assc_matches(pool: State<'_, SqlitePool>,name: String,) -> Result<
          INNER JOIN players AS loser ON (loser.id = matches.loser_id)
          WHERE winner.name = ? OR loser.name = ?
          ORDER BY matches.date DESC
-         LIMIT 4"
+         LIMIT 4",
     )
     .bind(&name)
     .bind(&name)
@@ -163,8 +166,12 @@ async fn find_assc_matches(pool: State<'_, SqlitePool>,name: String,) -> Result<
 }
 
 #[tauri::command]
-async fn get_leaderboard(pool: State<'_, SqlitePool>, preferences: String) -> Result<Vec<Player>,String> {
-    let settings: HashMap<String,String> = serde_json::from_str(&preferences).map_err(|e| e.to_string())?;
+async fn get_leaderboard(
+    pool: State<'_, SqlitePool>,
+    preferences: String,
+) -> Result<Vec<Player>, String> {
+    let settings: HashMap<String, String> =
+        serde_json::from_str(&preferences).map_err(|e| e.to_string())?;
     //whitelist allowed names
     let query = match settings["category"].as_str() {
         "elo" => "SELECT * FROM players ORDER BY elo DESC LIMIT ?",
@@ -173,28 +180,28 @@ async fn get_leaderboard(pool: State<'_, SqlitePool>, preferences: String) -> Re
         "name" => "SELECT * FROM players ORDER BY name DESC LIMIT ?",
         _ => return Err("Invalid sort category".to_string()),
     };
-    
+
     sqlx::query_as::<_, Player>(query)
-    .bind(&settings["count"])
-    .fetch_all(pool.inner())
-    .await
-    .map_err(|e| e.to_string())
+        .bind(&settings["count"])
+        .fetch_all(pool.inner())
+        .await
+        .map_err(|e| e.to_string())
 }
 
 fn calculate_new_elo(winner_elo: f64, loser_elo: f64, k_factor: f64) -> (f64, f64) {
-
     let expected_winner = 1.0 / (1.0 + 10.0_f64.powf((loser_elo - winner_elo) / 400.0));
     let expected_loser = 1.0 / (1.0 + 10.0_f64.powf((winner_elo - loser_elo) / 400.0));
-  
+
     let new_winner_elo = (winner_elo + k_factor * (1.0 - expected_winner)).round();
     let new_loser_elo = (loser_elo + k_factor * (0.0 - expected_loser)).round();
-  
+
     (new_winner_elo, new_loser_elo)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Get the application's data directory.
@@ -204,11 +211,9 @@ pub fn run() {
             let db_path = app_data_dir.join("mydatabase.db");
 
             // Configure SQLite.
-            let options = SqliteConnectOptions::from_str(
-                &format!("sqlite:{}", db_path.display())
-            )?
-            .create_if_missing(true)
-            .foreign_keys(true);
+            let options = SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path.display()))?
+                .create_if_missing(true)
+                .foreign_keys(true);
 
             // Initialize the connection pool and schema.
             let pool = tauri::async_runtime::block_on(async {

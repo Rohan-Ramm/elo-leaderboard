@@ -24,6 +24,12 @@
   position: relative;
 }
 
+p {
+  max-width: 65ch;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
 .row {
   display: flex;
   justify-content: center;
@@ -55,6 +61,17 @@
   padding: 3vh;
   min-width: 25rem;
   min-height: 20rem;
+}
+
+.center-point {
+  position:relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3vh;
+  gap: 15px;
+  width: 100%;
+  min-height: 10rem;
 }
 
 .big-box {

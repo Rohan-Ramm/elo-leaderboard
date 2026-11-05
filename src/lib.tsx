@@ -1,5 +1,3 @@
-import Database from "@tauri-apps/plugin-sql";
-
 type PlayerDisplay = {
     id: number;
     name: string;

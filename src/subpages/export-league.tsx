@@ -49,12 +49,10 @@ function ExportLeague() {
       <div className="central-column">
         <GoToMenu/>
         <h1>Export League</h1>
-        <div className="row">
-            <button className={exportFormat === "JSON" ? "selected-btn" : ""} onClick={() => setExportFormat('JSON')}>JSON</button>
-            <button className={exportFormat === "CSV" ? "selected-btn" : ""} onClick={() => setExportFormat('CSV')}>CSV</button>
-        </div>
-        <pre className="text-box">{exportData}</pre>
-        <div className="row"><button onClick={copyExportData}>Copy</button></div>
+          <div className="center-point">
+            <button onClick={copyExportData}>Export to JSON</button>
+            <button onClick={copyExportData}>Export to CSV</button>
+          </div>
       </div>
     </main>
   );
