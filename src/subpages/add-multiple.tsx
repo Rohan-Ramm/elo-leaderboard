@@ -22,18 +22,19 @@ Each game should be on a different line`
 
     event.preventDefault()
 
-    const tName = tourName.current?.value ?? "";
-    const gameList = inputData.split("\n")
+    const tName = (tourName.current?.value ?? "").trim();
+    // Drop blank or whitespace-only lines
+    const gameList = inputData.split("\n").filter((line) => line.trim() !== "")
     let currGame;
     let gameObjects;
-    
+
     gameObjects = gameList.map((game) => {
-      currGame = game.split(",")
+      currGame = game.split(",").map((field) => field.trim())
       if (presetTour) {
         console.log(currGame)
-        return {"winner_name": currGame[0], "loser_name": currGame[1],"tournament_name": tName, "date": currGame[2]} 
+        return {"winner_name": currGame[0], "loser_name": currGame[1], "date": currGame[2], "tournament_name": tName} 
       } else {
-        return  {"winner_name": currGame[0], "loser_name": currGame[1],"tournament_name": currGame[2], "date": currGame[3]}
+        return  {"winner_name": currGame[0], "loser_name": currGame[1], "date": currGame[2],"tournament_name": currGame[3]}
       }
     })
     console.log(gameObjects)

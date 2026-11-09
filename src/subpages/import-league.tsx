@@ -1,12 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open,confirm} from '@tauri-apps/plugin-dialog';
 
-async function ImportLeague() {
+// Not a page component: this is an action triggered from the main menu.
+async function importLeague() {
   const disclaimer = `Once you import a new league the current league's data will be replaced with that of the imported league. If you have not already exported the current league's data to a file it will be lost forever.`
 
   const confirmation = await confirm(
     disclaimer,
-    { title: 'Tauri', kind: 'warning' }
+    { title: 'Import League', kind: 'warning' }
   );
   console.log(confirmation);
 
@@ -25,6 +26,7 @@ async function ImportLeague() {
   console.log(file_suffix)
   if (file_suffix != "json" && file_suffix != "csv") {
     console.log("Improper file type")
+    return
   }
   await invoke("import_database", {"fileName": file, "fileType": file_suffix})
   .then(async (message) => {
@@ -35,4 +37,4 @@ async function ImportLeague() {
   })
 }
 
-export default ImportLeague;
+export default importLeague;

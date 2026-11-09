@@ -4,7 +4,6 @@ import "./App.css";
 import AddMultiple from "./subpages/add-multiple";
 import AddSingle from "./subpages/add-single";
 import ExportLeague from "./subpages/export-league";
-import ImportLeague from "./subpages/import-league";
 import ViewLeaderboard from "./subpages/view-leaderboard";
 import MainMenu from "./subpages/main-menu";
 import FindPlayer from "./subpages/find-player";
@@ -28,8 +27,6 @@ function App() {
         return <AddSingle />;
       case "export-league":
         return <ExportLeague />;
-      case "import-league":
-        return <ImportLeague />;
       case "find-player":
         return <FindPlayer />;
       case "leaderboard":

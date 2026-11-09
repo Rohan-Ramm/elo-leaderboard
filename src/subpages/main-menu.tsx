@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { PageSwapContext } from "../App";
-import ImportLeague from "./import-league"
+import importLeague from "./import-league"
 import "../App.css";
 import "./main-menu.css"
 
@@ -24,7 +24,7 @@ function MainMenu() {
             <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-single')}>Add Game (single)</button>
             <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-multiple')}>Add Game<br/>(multiple)</button>
             
-            <button className="menu-btn" onClick={ImportLeague}>Import League</button>
+            <button className="menu-btn" onClick={() => importLeague()}>Import League</button>
             <button className="menu-btn" onClick={() => pageSwapContext.setPage('export-league')}>Export League</button>
         </div>
     </div>

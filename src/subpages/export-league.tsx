@@ -6,7 +6,7 @@ function ExportLeague() {
   async function copyExportData(type: String): Promise<void> {
     const path = await save({
       title: 'Export Database',
-      defaultPath: 'my-database.json',
+      defaultPath: `my-database.${type}`,
       filters: [
         {
           name: type.valueOf().toUpperCase(),
@@ -14,7 +14,7 @@ function ExportLeague() {
         },
       ],
     });
-    console.log(path);
+    if (!path) return
 
     await invoke("export_database", {"fileName": path, "fileType": type})
     .then(async (message) => {
