@@ -4,16 +4,27 @@ import GoToMenu from "../go-to-menu";
 import "../App.css";
 function ExportLeague() {
   async function copyExportData(type: String): Promise<void> {
-    const path = await save({
-      title: 'Export Database',
-      defaultPath: `my-database.${type}`,
-      filters: [
-        {
-          name: type.valueOf().toUpperCase(),
-          extensions: [type.valueOf()],
-        },
-      ],
-    });
+    let path;
+    if (type == "csv") {
+      // CSV exports to a new folder (named in the save dialog) that the backend
+      // creates and fills with one CSV per table.
+      path = await save({
+        title: 'Export Database (choose a name for the new folder)',
+        defaultPath: 'my-database',
+      });
+    } else {
+      // JSON exports to a single file.
+      path = await save({
+        title: 'Export Database',
+        defaultPath: `my-database.${type}`,
+        filters: [
+          {
+            name: type.valueOf().toUpperCase(),
+            extensions: [type.valueOf()],
+          },
+        ],
+      });
+    }
     if (!path) return
 
     await invoke("export_database", {"fileName": path, "fileType": type})
