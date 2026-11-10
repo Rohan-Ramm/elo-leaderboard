@@ -142,7 +142,6 @@ button {
   transition: background-color 0.2s ease;
 
   aspect-ratio: 5 / 2;
-  height: 4rem;
 }
 
 .skinny-btn {

@@ -17,7 +17,7 @@ type PageSwapContextType = {
 export const PageSwapContext = createContext<PageSwapContextType | null>(null);
 
 function App() {
-  const [page, setPage] = useState("main-menu");
+  const [page, setPage] = useState("leaderboard");
 
   // Helper function to render active subpage
   const renderPage = () => {

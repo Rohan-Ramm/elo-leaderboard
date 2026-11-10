@@ -30,7 +30,7 @@ function ViewLeaderboard() {
       <div className="central-column">
         <GoToMenu/>
         <br></br>
-        <h1>View Leaderboard</h1>
+        <h1>Leaderboard</h1>
         <table>
           <thead>
             <tr>

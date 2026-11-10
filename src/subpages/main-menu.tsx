@@ -17,11 +17,11 @@ function MainMenu() {
         <h1 className="menu-title">Main Menu</h1>
         
         <div className="button-grid">
-            <button className="menu-btn" onClick={() => pageSwapContext.setPage('leaderboard')}>View Leaderboard</button>
-            <button className="menu-btn" onClick={() => pageSwapContext.setPage('find-player')}>Find Player</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('leaderboard')}>Leaderboard</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('find-player')}>Find a player</button>
             
             <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-single')}>Add Game (single)</button>
-            <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-multiple')}>Add Game<br/>(multiple)</button>
+            <button className="menu-btn" onClick={() => pageSwapContext.setPage('add-multiple')}>Add Game (multiple)</button>
             
             <button className="menu-btn" onClick={() => pageSwapContext.setPage('import-league')}>Import League</button>
             <button className="menu-btn" onClick={() => pageSwapContext.setPage('export-league')}>Export League</button>

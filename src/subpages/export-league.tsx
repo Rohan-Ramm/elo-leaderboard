@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { save } from '@tauri-apps/plugin-dialog';
+import { save, message } from '@tauri-apps/plugin-dialog';
 import GoToMenu from "../go-to-menu";
+import LoadingSpinner from "../loading-spinner";
 import "../App.css";
 function ExportLeague() {
+  // Text shown under the spinner while an export runs; null when idle.
+  const [busyLabel, setBusyLabel] = useState<string | null>(null)
+
   async function copyExportData(type: String): Promise<void> {
     let path;
     if (type == "csv") {
@@ -27,18 +32,29 @@ function ExportLeague() {
     }
     if (!path) return
 
-    await invoke("export_database", {"fileName": path, "fileType": type})
-    .then(async (message) => {
-      console.log(message)
-    })
-    .catch(async (err) => {
-      console.error("Failure:",err)
-    })
+    // Spin only while the backend works, not while the save dialog is open.
+    setBusyLabel("Exporting...")
+    let error: unknown = null
+    try {
+      console.log(await invoke("export_database", {"fileName": path, "fileType": type}))
+    } catch (err) {
+      error = err
+      console.error("Failure:", err)
+    } finally {
+      setBusyLabel(null)
+    }
+
+    if (error) {
+      await message(String(error), { title: 'Export failed', kind: 'error' })
+    } else {
+      await message('Done!', { title: 'Export League', kind: 'info' })
+    }
   }
 
   return (
     <main className="container">
       <div className="central-column">
+        {busyLabel && <LoadingSpinner label={busyLabel}/>}
         <GoToMenu/>
           <div className="center-point">
             <button onClick={() => copyExportData("json")}>Export to JSON</button>
