@@ -7,7 +7,6 @@ use sqlx::{
     FromRow, SqlitePool,
 };
 use std::collections::HashMap;
-use std::string;
 use std::{fs, str::FromStr};
 use tauri::{Manager, State};
 
@@ -204,7 +203,6 @@ fn calculate_new_elo(winner_elo: f64, loser_elo: f64, k_factor: f64) -> (f64, f6
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Get the application's data directory.
             let app_data_dir = app.path().app_data_dir()?;
