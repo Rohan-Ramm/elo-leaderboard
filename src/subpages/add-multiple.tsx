@@ -1,7 +1,7 @@
 import { useState,useContext,useRef } from "react";
 import GoToMenu from "../go-to-menu";
-import { PageSwapContext, DbContext } from "../App";
-import addGame from "../lib";
+import { PageSwapContext} from "../App";
+import { invoke } from "@tauri-apps/api/core";
 import "../App.css";
 
 function AddMultiple() {
@@ -9,10 +9,9 @@ function AddMultiple() {
   const tourName = useRef<HTMLInputElement>(null)
   const [presetTour,setPresetTour] = useState(false)
   const pageSwapContext = useContext(PageSwapContext)
-  const {db, loading} = useContext(DbContext)
 
   let text = `Post game information in the following format:
-{Winner},{Loser}, {Date}, {Tournament}
+{Winner},{Loser},{Date},{Tournament}
 Each game should be on a different line`
 
   if (!pageSwapContext) {
@@ -20,34 +19,38 @@ Each game should be on a different line`
   }
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    if (!db || loading) {
-      console.error("Database could not be accessed")
-      return
-    }
 
     event.preventDefault()
 
-    const tName = tourName.current?.value ?? "";
-    const gameList = inputData.split("\n")
-    let currGame = null;
+    const tName = (tourName.current?.value ?? "").trim();
+    // Drop blank or whitespace-only lines
+    const gameList = inputData.split("\n").filter((line) => line.trim() !== "")
+    let currGame;
+    let gameObjects;
+
+    gameObjects = gameList.map((game) => {
+      currGame = game.split(",").map((field) => field.trim())
+      if (presetTour) {
+        console.log(currGame)
+        return {"winner_name": currGame[0], "loser_name": currGame[1], "date": currGame[2], "tournament_name": tName} 
+      } else {
+        return  {"winner_name": currGame[0], "loser_name": currGame[1], "date": currGame[2],"tournament_name": currGame[3]}
+      }
+    })
+    console.log(gameObjects)
+    const jsonString = JSON.stringify(gameObjects)
 
     try {
-      for (const game of gameList) {
-        currGame = game.split(",")
-        if (presetTour) {
-          await addGame(currGame[0],currGame[1],tName,currGame[2],db)
-        } else {
-          await addGame(currGame[0],currGame[1],currGame[2],currGame[3],db)
-        }
-      }
-      console.log("Successful");
-      pageSwapContext.setPage("main-menu");
+      await invoke("add_games", {"inputData": jsonString})
     } catch(error) {
       console.error("Error occured on: ",currGame)
       console.error(error);
       alert("Games could not be added: Try Again")
       return
     }
+
+    console.log("Successful");
+    pageSwapContext.setPage("main-menu");
   };
   return (
     <main className="container">

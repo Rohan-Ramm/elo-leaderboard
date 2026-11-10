@@ -1,143 +1,76 @@
-import { useState, useContext } from "react";
-import Papa from 'papaparse'
-import { Player,Match } from "../lib";
-import { DbContext } from "../App";
-import Database from "@tauri-apps/plugin-sql";
+import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { PageSwapContext } from "../App";
+import { open, confirm, message } from '@tauri-apps/plugin-dialog';
 import GoToMenu from "../go-to-menu";
+import LoadingSpinner from "../loading-spinner";
 import "../App.css";
 
 function ImportLeague() {
-  const [importFormat,setImportFormat] = useState("JSON")
-  const [inputData,setInputData] = useState("")
-  const [submittable,setSubmittable] = useState(true)
-  const pageSwapContext = useContext(PageSwapContext)
-  const {db, loading} = useContext(DbContext)
+  // Text shown under the spinner while an import runs; null when idle.
+  const [busyLabel, setBusyLabel] = useState<string | null>(null)
 
-  if (!pageSwapContext) {
-    throw new Error("ImportLeague must be used inside PageSwapContext.Provider");
-  }
+  async function importData(type: string): Promise<void> {
+    const disclaimer = `Once you import a new league the current league's data will be replaced with that of the imported league. If you have not already exported the current league's data to a file it will be lost forever.`
 
-  async function importJson(db: Database) {
-    const playerData = JSON.parse(inputData).players
-    const matchData = JSON.parse(inputData).matches
-    for (const playerD of playerData) {
-      const currPlayer: Player = playerD
-      await db.execute(`INSERT INTO players (id,name,wins,losses,elo) VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5
-      )`, [currPlayer.id,currPlayer.name,currPlayer.wins,currPlayer.losses,currPlayer.elo])
-    }
-    console.log("Player adds successful")
+    const confirmation = await confirm(
+      disclaimer,
+      { title: 'Import League', kind: 'warning' }
+    );
+    if (!confirmation) return
 
-    for (const matchD of matchData) {
-      const currMatch: Match = matchD
-      await db.execute(`INSERT INTO matches (id,winner_id, loser_id, tournament_name, date) VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5
-      )`,[currMatch.id,currMatch.winner_id,currMatch.loser_id,currMatch.tournament_name,currMatch.date])
+    let path;
+    if (type == "csv") {
+      // A CSV export is a folder holding players.csv and matches.csv, so pick
+      // the folder itself.
+      path = await open({
+        title: 'Import Database (choose the exported folder)',
+        multiple: false,
+        directory: true,
+      });
+    } else {
+      // A JSON export is a single file.
+      path = await open({
+        title: 'Import Database',
+        multiple: false,
+        directory: false,
+        filters: [
+          {
+            name: 'JSON',
+            extensions: ['json'],
+          },
+        ],
+      });
     }
-    console.log("Match adds successful")
-  }
+    if (!path) return
 
-  async function importCSV(db: Database) {
-    const sections = inputData.split(/^(players|matches)\s*$/im);
-    const result: Record<string, any[]> = {};
-    console.log(sections)
-    for (let i = 1; i < sections.length; i += 2) {
-        const tableName = sections[i].toLowerCase();
-        const csv = sections[i + 1].trim();
-        result[tableName] = Papa.parse(csv, {
-            header: true,
-            skipEmptyLines: true
-        }).data;
-    }
-    for (const playerD of result["players"]) {
-      const currPlayer: Player = playerD
-      await db.execute(`INSERT INTO players (id,name,wins,losses,elo) VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5
-      )`, [currPlayer.id,currPlayer.name,currPlayer.wins,currPlayer.losses,currPlayer.elo])
-    }
-    console.log("Player adds successful")
-
-    for (const matchD of result["matches"]) {
-      const currMatch: Match = matchD
-      console.log(currMatch)
-      await db.execute(`INSERT INTO matches (id,winner_id, loser_id, tournament_name, date) VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5
-      )`,[currMatch.id,currMatch.winner_id,currMatch.loser_id,currMatch.tournament_name,currMatch.date])
-    }
-    console.log("Match adds successful")
-  }
-
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!submittable) {
-      return
-    }
-    console.log("Submitted info")
-    setSubmittable(false)
-    if(!db || loading) {
-      console.log("Database failed to load.")
-      return 
-    }
+    // Spin only while the backend works, not while the dialogs are open.
+    setBusyLabel("Importing...")
+    let error: unknown = null
     try {
-      await db.execute('DELETE FROM matches')
-      await db.execute('DELETE FROM sqlite_sequence WHERE name="matches"')
-      await db.execute('DELETE FROM players')
-      await db.execute('DELETE FROM sqlite_sequence WHERE name="players"')
-      console.log("Deletes successful")
+      console.log(await invoke("import_database", {"fileName": path, "fileType": type}))
+    } catch (err) {
+      error = err
+      console.error("Failure:", err)
+    } finally {
+      setBusyLabel(null)
+    }
 
-      if (importFormat == "JSON") {
-        await importJson(db);
-      } else {
-        await importCSV(db);
-      }
-      console.log("Success")
-      setSubmittable(true)
-      pageSwapContext.setPage("main-menu")
+    if (error) {
+      await message(String(error), { title: 'Import failed', kind: 'error' })
+    } else {
+      await message('Done!', { title: 'Import League', kind: 'info' })
     }
-    catch(error) {
-      console.error("Error:",error)
-    }
-  };
+  }
 
   return (
     <main className="container">
       <div className="central-column">
+        {busyLabel && <LoadingSpinner label={busyLabel}/>}
         <GoToMenu/>
-        
-        <h1>Import League</h1>
-        <div className="row">
-            <button className={importFormat === "JSON" ? "selected-btn" : ""} onClick={() => setImportFormat('JSON')}>JSON</button>
-            <button className={importFormat === "CSV" ? "selected-btn" : ""} onClick={() => setImportFormat('CSV')}>CSV</button>
-        </div>
-        <form className="long-answer" onSubmit={handleSubmit}>
-          <p>Paste your league's information into the textbox below</p>
-          <textarea
-            className="big-box"
-            rows={20}
-            placeholder="Place information here"
-            onChange={(e) => setInputData(e.target.value)}
-          />
-          <br></br>
-          <button type="submit" value="Submit">Submit</button>
-        </form>
+          <div className="center-point">
+            <button onClick={() => importData("json")}>Import from JSON</button>
+            <button onClick={() => importData("csv")}>Import from CSV</button>
+          </div>
       </div>
     </main>
   );

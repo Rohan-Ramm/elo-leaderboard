@@ -1,62 +1,65 @@
-import { useState,useEffect,useContext } from "react";
-import { DbContext } from "../App";
+import { useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { save, message } from '@tauri-apps/plugin-dialog';
 import GoToMenu from "../go-to-menu";
-import Papa from 'papaparse'
+import LoadingSpinner from "../loading-spinner";
 import "../App.css";
-import { Player,Match } from "../lib";
-
 function ExportLeague() {
-  const {db, loading} = useContext(DbContext)
-  const [exportFormat,setExportFormat] = useState("JSON")
-  const [exportData,setExportData] = useState("Hello World")
+  // Text shown under the spinner while an export runs; null when idle.
+  const [busyLabel, setBusyLabel] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function setup() {
-      if(!db || loading) {
-        console.log("Database failed to load.")
-        return 
-      }
-      const players = await db.select<Player[]>("Select * FROM players");
-      const matches = await db.select<Match[]>("Select * FROM matches");
-      const jsonData = JSON.stringify({"players": players, "matches": matches},null,1)
-      if (exportFormat == "JSON") {
-        setExportData(jsonData)
-      } else {
-        const playerCSV = Papa.unparse(players, {
-          header:true,
-          skipEmptyLines:true,
-          newline: '\n',
-        })
-        const matchCSV = Papa.unparse(matches, {
-          header: true,
-          skipEmptyLines:true,
-          newline: '\n',
-        })
-        const finalCSV = `players\n` +
-          playerCSV +
-          `\nmatches\n` +
-          matchCSV
-        setExportData(finalCSV)
-      }
+  async function copyExportData(type: String): Promise<void> {
+    let path;
+    if (type == "csv") {
+      // CSV exports to a new folder (named in the save dialog) that the backend
+      // creates and fills with one CSV per table.
+      path = await save({
+        title: 'Export Database (choose a name for the new folder)',
+        defaultPath: 'my-database',
+      });
+    } else {
+      // JSON exports to a single file.
+      path = await save({
+        title: 'Export Database',
+        defaultPath: `my-database.${type}`,
+        filters: [
+          {
+            name: type.valueOf().toUpperCase(),
+            extensions: [type.valueOf()],
+          },
+        ],
+      });
     }
-    setup();
-  }, [exportFormat]);
-  
-  async function copyExportData(): Promise<void> {
-    await navigator.clipboard.writeText(exportData);
+    if (!path) return
+
+    // Spin only while the backend works, not while the save dialog is open.
+    setBusyLabel("Exporting...")
+    let error: unknown = null
+    try {
+      console.log(await invoke("export_database", {"fileName": path, "fileType": type}))
+    } catch (err) {
+      error = err
+      console.error("Failure:", err)
+    } finally {
+      setBusyLabel(null)
+    }
+
+    if (error) {
+      await message(String(error), { title: 'Export failed', kind: 'error' })
+    } else {
+      await message('Done!', { title: 'Export League', kind: 'info' })
+    }
   }
 
   return (
     <main className="container">
       <div className="central-column">
+        {busyLabel && <LoadingSpinner label={busyLabel}/>}
         <GoToMenu/>
-        <h1>Export League</h1>
-        <div className="row">
-            <button className={exportFormat === "JSON" ? "selected-btn" : ""} onClick={() => setExportFormat('JSON')}>JSON</button>
-            <button className={exportFormat === "CSV" ? "selected-btn" : ""} onClick={() => setExportFormat('CSV')}>CSV</button>
-        </div>
-        <pre className="text-box">{exportData}</pre>
-        <div className="row"><button onClick={copyExportData}>Copy</button></div>
+          <div className="center-point">
+            <button onClick={() => copyExportData("json")}>Export to JSON</button>
+            <button onClick={() => copyExportData("csv")}>Export to CSV</button>
+          </div>
       </div>
     </main>
   );

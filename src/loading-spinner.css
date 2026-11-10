@@ -1,0 +1,39 @@
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit; /* match the rounded corners of .central-column */
+  background-color: rgba(18, 92, 93, 0.85); /* .central-column's #125c5d, slightly see-through */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  cursor: wait;
+}
+
+.spinner {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 0.4rem solid #13898f;
+  border-top-color: #d3e2e3;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.spinner-label {
+  font-size: 1.2rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Slow the wheel down for people who have asked their OS for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.5s;
+  }
+}

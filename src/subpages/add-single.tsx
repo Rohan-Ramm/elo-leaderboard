@@ -1,34 +1,34 @@
-import { useState, useContext } from "react";
-import { DbContext } from "../App";
+import { useState } from "react";
 import GoToMenu from "../go-to-menu";
-import addGame from "../lib";
+import { invoke } from "@tauri-apps/api/core";
+import { Match } from "../lib";
 import "../App.css";
 
 function AddSingle() {
-  const [winner,setWinner] = useState("")
-  const [loser,setLoser] = useState("")
-  const [tournament,setTournament] = useState("")
-  const [date,setDate] = useState("")
-  const {db, loading} = useContext(DbContext)
+  const [matchData, setMatchData] = useState<Match>({"winner_name": "", "loser_name": "", "tournament_name": "", "date": ""})
 
   const onClick = async () => {
-    if (winner == "" || loser == "" || tournament == "" || date == "" || loading || !db) {
+    if (matchData.winner_name == "" || matchData.loser_name == "" || matchData.tournament_name == "" || matchData.date == "") {
       console.error("Failure")
       return
     }
-    
-    await addGame(winner,loser,tournament,date,db)
-    .then(async () => {
-      console.log("Success")
+    const jsonString = JSON.stringify([{
+      "winner_name": matchData.winner_name,
+      "loser_name": matchData.loser_name,
+      "tournament_name": matchData.tournament_name,
+      "date": matchData.date}])
+    await invoke("add_games", {"inputData": jsonString})
+    .then(async (message) => {
+      console.log(message)
     })
     .catch(async (err) => {
       console.error("Failure:",err)
     })
 
-    setWinner("")
-    setLoser("")
-    setTournament("")
-    setDate("")
+    setMatchData(prev => ({...prev, "winner_name": ""}))
+    setMatchData(prev => ({...prev, "loser_name": ""}))
+    setMatchData(prev => ({...prev, "tournament_name": ""}))
+    setMatchData(prev => ({...prev, "date": ""}))
   };
 
   return (
@@ -39,19 +39,19 @@ function AddSingle() {
         <div className="field-list">
           <div className="row-2">
             <div className="text-bubble">Winner</div>
-            <input type="text" value={winner} onChange={(e)=>setWinner(e.target.value)}/>
+            <input type="text" value={matchData.winner_name} onChange={(e)=>setMatchData(prev => ({...prev, "winner_name": e.target.value}))}/>
           </div>
           <div className="row-2">
             <div className="text-bubble">Loser</div>
-            <input type="text" value={loser} onChange={(e)=>setLoser(e.target.value)}/>
+            <input type="text" value={matchData.loser_name} onChange={(e)=>setMatchData(prev => ({...prev, "loser_name": e.target.value}))}/>
           </div>
           <div className="row-2">
             <div className="text-bubble">Tournament</div>
-            <input type="text" value={tournament} onChange={(e)=>setTournament(e.target.value)}/>
+            <input type="text" value={matchData.tournament_name} onChange={(e)=>setMatchData(prev => ({...prev, "tournament_name": e.target.value}))}/>
           </div>
           <div className="row-2">
             <div className="text-bubble">Date</div>
-            <input type="text" value={date} onChange={(e)=>setDate(e.target.value)}/>
+            <input type="text" value={matchData.date} onChange={(e)=>setMatchData(prev => ({...prev, "date": e.target.value}))}/>
           </div>
         </div>
         <br/>

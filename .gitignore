@@ -24,6 +24,4 @@ dist-ssr
 *.sw?
 
 #Test Outputs
-*.txt
-*.json
-*.csv
+testing/

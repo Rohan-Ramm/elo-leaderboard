@@ -1,63 +1,35 @@
-import { useState,useContext } from "react";
-import { Player, Match, PlayerMatch } from "../lib";
+import { useState } from "react";
+import { Player, Match } from "../lib";
 import { invoke } from "@tauri-apps/api/core";
-import { DbContext } from "../App";
 import GoToMenu from "../go-to-menu";
 import "../App.css";
 import "./find-player.css"
 
 function FindPlayer() {
-  const {db, loading} = useContext(DbContext)
 
   const [search,setSearch] = useState("")
   const [targetPlayer,setTargetPlayer] = useState<Player>()
-  const [matchList,setMatchList] = useState<PlayerMatch[]>([])
-
-  function getMatchData(match: PlayerMatch) {
-    return `${match.tournament_name} ${match.outcome} vs ${match.opponent}\n${match.date}`
-  }
-
-  if(!db || loading) {
-    console.log("Database failed to load.")
-  }
+  const [matchList,setMatchList] = useState<Match[]>([])
 
   const onClick = async () => {
-    if(!db || loading) {
-      console.log("Database failed to load.")
-      return 
-    }
+
     try {
-      const result = await db.select<Player[]>(
-        "SELECT * FROM players WHERE name = $1;",[search]
-      );
-      if(result.length == 0) {
+      const result_player = await invoke("find_player", {name: search});
+      if(result_player == null) {
         console.log("Player not found")
         return 
       }
-      setTargetPlayer(result[0])
+      setTargetPlayer(result_player as Player)
+      //console.log(result_player)
 
-      const match_data = await db.select<Match[]>(`
-        SELECT * FROM matches 
-        WHERE winner_id = $1 OR loser_id = $1 
-        ORDER BY date DESC 
-        LIMIT 4`,[result[0].id]);
-
-      const personalized_match_data:PlayerMatch[]  = []
-      let opponent;
-      let outcome;
-      for (const match of match_data) {
-        if (match.winner_id == result[0].id) {
-          outcome = "Won"
-          opponent = await db.select<Player[]>("SELECT name from players where id = $1",[match.loser_id])
-        } else {
-          outcome = "Lost"
-          opponent = await db.select<Player[]>("SELECT name from players where id = $1",[match.loser_id])
-        }
-        personalized_match_data.push({"outcome": outcome, "opponent": opponent[0].name, "tournament_name":match.tournament_name, "date":match.date})
+      const result_matches = await invoke("find_assc_matches", {name: search});
+      if(result_matches == null) {
+        console.log("Player not found")
+        return 
       }
-      console.log(match_data)
-      console.log(personalized_match_data)
-      setMatchList(personalized_match_data)
+      setMatchList(result_matches as Match[])
+      //console.log(result_matches)
+
       console.log("Succeeded")
     } catch(err) {
       console.error("Failure",err)
@@ -88,7 +60,7 @@ function FindPlayer() {
               matchList.map((match,index) => 
                 <div className="big-info-box" key = {index}>
                   <div>{match.tournament_name}</div>
-                  <div><b>{match.outcome}</b> vs {match.opponent}</div>
+                  <div><b>{match.winner_name}</b> defeated {match.loser_name}</div>
                   <div>{match.date}</div>
                 </div>
             )}

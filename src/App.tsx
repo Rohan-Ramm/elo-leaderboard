@@ -1,5 +1,4 @@
-import { createContext, useState, useEffect } from "react";
-import Database from "@tauri-apps/plugin-sql";
+import { createContext, useState } from "react";
 import "./App.css";
 
 import AddMultiple from "./subpages/add-multiple";
@@ -15,38 +14,10 @@ type PageSwapContextType = {
   setPage: React.Dispatch<React.SetStateAction<string>>;
 };
 
-type DbContextType = {
-  db: Database | null;
-  loading: boolean;
-};
-
 export const PageSwapContext = createContext<PageSwapContextType | null>(null);
 
-export const DbContext = createContext<DbContextType>({
-  db: null,
-  loading: true,
-});
-
 function App() {
-  const [page, setPage] = useState("main-menu");
-  const [db, setDb] = useState<Database | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function init() {
-      try {
-        const connection = await Database.load("sqlite:mydatabase.db");
-        setDb(connection);
-        console.log("Successfully connected to SQLite database")
-      } catch (err) {
-        console.error("Failed to connect to SQLite database:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    init();
-  }, []);
+  const [page, setPage] = useState("leaderboard");
 
   // Helper function to render active subpage
   const renderPage = () => {
@@ -71,11 +42,9 @@ function App() {
 
   return (
     <PageSwapContext.Provider value={{ setPage }}>
-      <DbContext.Provider value={{ db, loading }}>
-        <div className="app-container">
-          {renderPage()}
-        </div>
-      </DbContext.Provider>
+      <div className="app-container">
+        {renderPage()}
+      </div>
     </PageSwapContext.Provider>
   );
 }
